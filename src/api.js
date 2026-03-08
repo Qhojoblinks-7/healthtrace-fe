@@ -75,7 +75,7 @@ export const screeningAPI = {
   getByPatient: (patientId) => api.get(`/screenings/?patient=${patientId}`),
 
   // Get screening statistics
-  getStats: () => api.get("/screenings/stats/"),
+  getStats: () => api.get("/screenings/summary/"),
 };
 
 // Patient API endpoints
