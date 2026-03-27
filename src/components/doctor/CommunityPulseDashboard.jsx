@@ -155,18 +155,18 @@ export function CommunityPulseDashboard() {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Total Screened */}
-        <Card className="bg-gradient-to-br from-primary/10 to-primary/5">
+        <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Total Screened</p>
-                <p className="text-3xl font-bold">
+                <p className="text-3xl font-bold text-card-foreground">
                   {stats?.total_screened || 0}
                 </p>
               </div>
-              <div className="p-3 bg-primary/10 rounded-full">
+              <div className="p-3 bg-gradient-to-br from-white to-[#E8EDF2] rounded-full shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)]">
                 <Users className="h-6 w-6 text-primary" />
               </div>
             </div>
@@ -177,17 +177,17 @@ export function CommunityPulseDashboard() {
         </Card>
 
         {/* High Risk (Hypertension) */}
-        <Card className="bg-gradient-to-br from-red-50 to-red-5">
+        <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">High Risk (BP)</p>
-                <p className="text-3xl font-bold text-red-600">
+                <p className="text-3xl font-bold text-destructive">
                   {stats?.high_bp_count || 0}
                 </p>
               </div>
-              <div className="p-3 bg-red-100 rounded-full">
-                <AlertTriangle className="h-6 w-6 text-red-600" />
+              <div className="p-3 bg-gradient-to-br from-white to-[#E8EDF2] rounded-full shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)]">
+                <AlertTriangle className="h-6 w-6 text-destructive" />
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
@@ -199,19 +199,19 @@ export function CommunityPulseDashboard() {
         </Card>
 
         {/* Follow-up Required */}
-        <Card className="bg-gradient-to-br from-yellow-50 to-yellow-5">
+        <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">
                   Follow-up Required
                 </p>
-                <p className="text-3xl font-bold text-yellow-600">
+                <p className="text-3xl font-bold text-accent">
                   {stats?.pending_consultations || 0}
                 </p>
               </div>
-              <div className="p-3 bg-yellow-100 rounded-full">
-                <Heart className="h-6 w-6 text-yellow-600" />
+              <div className="p-3 bg-gradient-to-br from-white to-[#E8EDF2] rounded-full shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)]">
+                <Heart className="h-6 w-6 text-accent" />
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
@@ -327,15 +327,15 @@ export function CommunityPulseDashboard() {
                   {total > 0 ? ((normalBP / total) * 100).toFixed(1) : 0}%
                 </span>
               </div>
-              <div className="h-4 bg-muted rounded-full overflow-hidden flex">
+              <div className="h-4 bg-gradient-to-br from-[#E8EDF2] to-white rounded-full overflow-hidden flex shadow-[inset_2px_2px_4px_rgba(176,190,197,0.3),inset_-2px_-2px_4px_rgba(255,255,255,0.5)]">
                 <div
-                  className="h-full bg-green-500"
+                  className="h-full bg-gradient-to-r from-primary to-primary-600"
                   style={{
                     width: `${total > 0 ? (normalBP / total) * 100 : 0}%`,
                   }}
                 />
                 <div
-                  className="h-full bg-red-500"
+                  className="h-full bg-gradient-to-r from-destructive to-destructive-600"
                   style={{
                     width: `${total > 0 ? (highBP / total) * 100 : 0}%`,
                   }}

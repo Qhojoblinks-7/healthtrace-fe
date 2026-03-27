@@ -30,15 +30,16 @@ const Toaster = ({
       }}
       style={
         {
-          "--normal-bg": "var(--popover)",
+          "--normal-bg": "linear-gradient(to bottom right, white, #E8EDF2)",
           "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)"
+          "--normal-border": "transparent",
+          "--border-radius": "12px",
+          "--shadow": "8px 8px 16px rgba(176,190,197,0.5), -8px -8px 16px rgba(255,255,255,0.8)"
         }
       }
       toastOptions={{
         classNames: {
-          toast: "cn-toast",
+          toast: "cn-toast rounded-xl bg-gradient-to-br from-white to-[#E8EDF2] shadow-[8px_8px_16px_rgba(176,190,197,0.5),-8px_-8px_16px_rgba(255,255,255,0.8)] border-0",
         },
       }}
       {...props} />

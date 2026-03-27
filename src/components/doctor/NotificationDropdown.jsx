@@ -80,7 +80,7 @@ export function NotificationDropdown({ sidebarCollapsed }) {
       <Button
         variant="ghost"
         className={cn(
-          "text-slate-600 hover:text-slate-900 hover:bg-slate-100 relative",
+          "text-muted-foreground hover:text-card-foreground hover:bg-gradient-to-br hover:from-white hover:to-[#E8EDF2] hover:shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)] relative",
           sidebarCollapsed ? "w-10 h-10 p-0" : "w-auto h-10 px-3",
         )}
         onClick={() => setIsOpen(!isOpen)}
@@ -88,7 +88,7 @@ export function NotificationDropdown({ sidebarCollapsed }) {
         <Bell className="h-5 w-5" />
         {!sidebarCollapsed && <span className="ml-2">Notifications</span>}
         {unreadCount > 0 && (
-          <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-red-500">
+          <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-destructive">
             {unreadCount}
           </Badge>
         )}
@@ -96,9 +96,9 @@ export function NotificationDropdown({ sidebarCollapsed }) {
 
       {/* Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-slate-200 z-50 max-h-[500px] overflow-hidden">
-          <div className="p-3 border-b border-slate-200 flex items-center justify-between">
-            <h3 className="font-semibold text-slate-900">Notifications</h3>
+        <div className="absolute right-0 mt-2 w-96 bg-gradient-to-br from-white to-[#E8EDF2] rounded-2xl shadow-[8px_8px_16px_rgba(176,190,197,0.5),-8px_-8px_16px_rgba(255,255,255,0.8)] z-50 max-h-[500px] overflow-hidden">
+          <div className="p-3 border-b border-border flex items-center justify-between">
+            <h3 className="font-semibold text-card-foreground">Notifications</h3>
             <Button
               variant="ghost"
               size="sm"
@@ -119,7 +119,7 @@ export function NotificationDropdown({ sidebarCollapsed }) {
               }
             `}</style>
             {notifications.length === 0 ? (
-              <div className="p-4 text-center text-slate-500">
+              <div className="p-4 text-center text-muted-foreground">
                 <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
                 <p>No notifications</p>
               </div>
@@ -128,40 +128,40 @@ export function NotificationDropdown({ sidebarCollapsed }) {
                 <div
                   key={notification.id}
                   className={cn(
-                    "p-3 border-b border-slate-100 cursor-pointer hover:bg-slate-50 transition-colors",
-                    !notification.read && "bg-blue-50",
+                    "p-3 border-b border-border cursor-pointer hover:bg-gradient-to-br hover:from-white hover:to-[#E8EDF2] transition-all",
+                    !notification.read && "bg-gradient-to-br from-blue-50 to-blue-100",
                   )}
                   onClick={() => handleNotificationClick(notification)}
                 >
                   <div className="flex items-start gap-3">
                     <div
                       className={cn(
-                        "p-2 rounded-full",
+                        "p-2 rounded-full bg-gradient-to-br from-white to-[#E8EDF2] shadow-[2px_2px_4px_rgba(176,190,197,0.4),-2px_-2px_4px_rgba(255,255,255,0.7)]",
                         notification.type === "critical"
-                          ? "bg-red-100"
-                          : "bg-orange-100",
+                          ? "text-destructive"
+                          : "text-accent",
                       )}
                     >
                       {notification.type === "critical" ? (
-                        <AlertCircle className="h-4 w-4 text-red-600" />
+                        <AlertCircle className="h-4 w-4" />
                       ) : (
-                        <AlertTriangle className="h-4 w-4 text-orange-600" />
+                        <AlertTriangle className="h-4 w-4" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm text-slate-900">
+                      <p className="font-medium text-sm text-card-foreground">
                         {notification.title}
                       </p>
-                      <p className="text-xs text-slate-600 truncate">
+                      <p className="text-xs text-muted-foreground truncate">
                         {notification.message}
                       </p>
-                      <p className="text-xs text-slate-400 flex items-center gap-1 mt-1">
+                      <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
                         <Clock className="h-3 w-3" />
                         {formatTime(notification.timestamp)}
                       </p>
                     </div>
                     {!notification.read && (
-                      <div className="w-2 h-2 rounded-full bg-blue-500 mt-2" />
+                      <div className="w-2 h-2 rounded-full bg-primary mt-2" />
                     )}
                   </div>
                 </div>

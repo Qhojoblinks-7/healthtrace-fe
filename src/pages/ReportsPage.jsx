@@ -233,7 +233,7 @@ export function ReportsPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
+          <h1 className="text-2xl font-bold flex items-center gap-2 text-card-foreground">
             <FileText className="h-6 w-6 text-primary" />
             Reports
           </h1>
@@ -317,7 +317,7 @@ export function ReportsPage() {
           ) : filteredScreenings.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-center">
               <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-lg font-medium">No reports found</p>
+              <p className="text-lg font-medium text-card-foreground">No reports found</p>
               <p className="text-sm text-muted-foreground">
                 Try adjusting your search or filters
               </p>

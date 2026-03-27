@@ -64,20 +64,20 @@ export function DoctorLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-[#F5F7FA] to-[#E4EBF5]">
       {/* Fixed Header - spans full width */}
-      <header className="fixed top-0 left-0 right-0 z-30 bg-white border-b h-16">
+      <header className="fixed top-0 left-0 right-0 z-30 bg-gradient-to-br from-white to-[#E8EDF2] shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)] h-16">
         <div className="flex items-center justify-center h-full px-4">
           {/* Search Bar - Center */}
           <div className="flex-1 max-w-xl">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search patients by name or phone number..."
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className="w-full h-10 pl-10 pr-4 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full h-10 pl-10 pr-4 rounded-xl border-0 bg-gradient-to-br from-[#E8EDF2] to-white shadow-[inset_2px_2px_4px_rgba(176,190,197,0.3),inset_-2px_-2px_4px_rgba(255,255,255,0.5)] focus:shadow-[inset_2px_2px_4px_rgba(176,190,197,0.3),inset_-2px_-2px_4px_rgba(255,255,255,0.5),0_0_0_2px_rgba(76,175,80,0.3)] focus:outline-none text-sm"
               />
             </div>
           </div>
@@ -92,7 +92,7 @@ export function DoctorLayout() {
       {/* Sidebar - Fixed on LEFT side */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-30 h-[calc(100vh-4rem)] bg-slate-900 text-white transition-all duration-300 border-r h-screen",
+          "fixed top-0 left-0 z-30 h-[calc(100vh-4rem)] bg-gradient-to-br from-[#E8EDF2] to-white text-card-foreground transition-all duration-300 shadow-[8px_8px_16px_rgba(176,190,197,0.5),-8px_-8px_16px_rgba(255,255,255,0.8)] h-screen",
           sidebarCollapsed ? "w-20" : "w-64",
         )}
       >
@@ -102,14 +102,14 @@ export function DoctorLayout() {
           size="icon"
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
           className={cn(
-            "absolute top-1/2 -translate-y-1/2 h-8 w-8 bg-slate-800 hover:bg-slate-700 border border-slate-700",
+            "absolute top-1/2 -translate-y-1/2 h-8 w-8 bg-gradient-to-br from-white to-[#E8EDF2] shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)] hover:shadow-[8px_8px_16px_rgba(176,190,197,0.5),-8px_-8px_16px_rgba(255,255,255,0.8)]",
             sidebarCollapsed ? "-right-4" : "-right-4",
           )}
         >
           {sidebarCollapsed ? (
-            <ChevronRight className="h-4 w-4 text-white" />
+            <ChevronRight className="h-4 w-4 text-primary" />
           ) : (
-            <ChevronLeft className="h-4 w-4 text-white" />
+            <ChevronLeft className="h-4 w-4 text-primary" />
           )}
         </Button>
 
@@ -122,10 +122,10 @@ export function DoctorLayout() {
                 to={item.href}
                 className={({ isActive }) =>
                   cn(
-                    "flex items-center gap-3 px-3 py-3 rounded-lg transition-colors",
+                    "flex items-center gap-3 px-3 py-3 rounded-xl transition-all",
                     isActive
-                      ? "bg-blue-600 text-white"
-                      : "text-slate-400 hover:bg-slate-800 hover:text-white",
+                      ? "bg-gradient-to-br from-white to-[#E8EDF2] text-primary shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)]"
+                      : "text-muted-foreground hover:bg-gradient-to-br hover:from-white hover:to-[#E8EDF2] hover:text-card-foreground hover:shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)]",
                     sidebarCollapsed && "justify-center",
                   )
                 }
@@ -137,9 +137,9 @@ export function DoctorLayout() {
           </nav>
 
           {/* Settings & Notifications */}
-          <div className="p-4 border-t border-slate-800 space-y-2">
+          <div className="p-4 border-t border-border space-y-2">
             {!sidebarCollapsed && (
-              <p className="text-xs text-slate-500 uppercase font-medium px-3">
+              <p className="text-xs text-muted-foreground uppercase font-medium px-3">
                 Settings
               </p>
             )}
@@ -148,10 +148,10 @@ export function DoctorLayout() {
               to="/settings"
               className={({ isActive }) =>
                 cn(
-                  "flex items-center gap-3 px-3 py-3 rounded-lg transition-colors",
+                  "flex items-center gap-3 px-3 py-3 rounded-xl transition-all",
                   isActive
-                    ? "bg-blue-600 text-white"
-                    : "text-slate-400 hover:bg-slate-800 hover:text-white",
+                    ? "bg-gradient-to-br from-white to-[#E8EDF2] text-primary shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)]"
+                    : "text-muted-foreground hover:bg-gradient-to-br hover:from-white hover:to-[#E8EDF2] hover:text-card-foreground hover:shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)]",
                   sidebarCollapsed && "justify-center",
                 )
               }
@@ -162,20 +162,20 @@ export function DoctorLayout() {
           </div>
 
           {/* Footer - Doctor Profile */}
-          <div className="p-4 border-t border-slate-800">
+          <div className="p-4 border-t border-border">
             <div
               className={cn(
                 "flex items-center gap-3",
                 sidebarCollapsed && "justify-center",
               )}
             >
-              <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center font-bold shrink-0">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-primary-600 flex items-center justify-center font-bold shrink-0 shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)]">
                 DR
               </div>
               {!sidebarCollapsed && (
                 <div>
-                  <p className="font-medium text-sm">Dr. Smith</p>
-                  <p className="text-xs text-slate-400">General Practitioner</p>
+                  <p className="font-medium text-sm text-card-foreground">Dr. Smith</p>
+                  <p className="text-xs text-muted-foreground">General Practitioner</p>
                 </div>
               )}
             </div>

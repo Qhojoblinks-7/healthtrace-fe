@@ -11,7 +11,7 @@ const Command = React.forwardRef(({ className, ...props }, ref) => (
   <CommandPrimitive
     ref={ref}
     className={cn(
-      "flex h-full w-full flex-col overflow-hidden rounded-lg bg-background",
+      "flex h-full w-full flex-col overflow-hidden rounded-xl bg-gradient-to-br from-white to-[#E8EDF2] shadow-[8px_8px_16px_rgba(176,190,197,0.5),-8px_-8px_16px_rgba(255,255,255,0.8)]",
       className
     )}
     {...props} />
@@ -47,7 +47,7 @@ const CommandDialog = ({
 }
 
 const CommandInput = React.forwardRef(({ className, ...props }, ref) => (
-  <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
+  <div className="flex items-center border-b border-slate-200 px-3" cmdk-input-wrapper="">
     <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
     <CommandPrimitive.Input
       ref={ref}
@@ -93,7 +93,7 @@ CommandGroup.displayName = CommandPrimitive.Group.displayName
 const CommandSeparator = React.forwardRef(({ className, ...props }, ref) => (
   <CommandPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 h-px bg-border", className)}
+    className={cn("-mx-1 h-px bg-slate-200", className)}
     {...props} />
 ))
 CommandSeparator.displayName = CommandPrimitive.Separator.displayName
@@ -102,7 +102,7 @@ const CommandItem = React.forwardRef(({ className, ...props }, ref) => (
   <CommandPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-accent aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-slate-100 aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     {...props} />
@@ -136,7 +136,7 @@ const CommandDialogContent = ({ children }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-[10vh]">
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-      <div className="relative w-full max-w-lg overflow-hidden rounded-lg border bg-background shadow-lg">
+      <div className="relative w-full max-w-lg overflow-hidden rounded-xl border-0 bg-gradient-to-br from-white to-[#E8EDF2] shadow-[8px_8px_16px_rgba(176,190,197,0.5),-8px_-8px_16px_rgba(255,255,255,0.8)]">
         {children}
       </div>
     </div>

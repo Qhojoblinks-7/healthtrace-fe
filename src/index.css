@@ -1,39 +1,48 @@
 @import "tailwindcss";
 
-/* Royal Blue Theme CSS Variables */
+/* Neumorphic Theme CSS Variables */
 :root {
-  /* Primary - Royal Blue */
-  --color-primary: 65 105 225;
+  /* Primary - Eco-Tech Green */
+  --color-primary: 76 175 80;
   --color-primary-foreground: 255 255 255;
   
-  /* Secondary - Medical Green */
-  --color-secondary: 16 185 129;
+  /* Secondary - Sky Blue */
+  --color-secondary: 33 150 243;
   --color-secondary-foreground: 255 255 255;
+  
+  /* Accent - Warm Amber */
+  --color-accent: 255 193 7;
+  --color-accent-foreground: 33 33 33;
   
   /* Destructive */
   --color-destructive: 220 38 38;
   --color-destructive-foreground: 255 255 255;
   
   /* Muted */
-  --color-muted: 241 245 249;
+  --color-muted: 245 247 250;
   --color-muted-foreground: 100 116 139;
   
-  /* Accent */
-  --color-accent: 248 250 252;
-  --color-accent-foreground: 71 85 105;
-  
   /* Card */
-  --color-card: 255 255 255;
-  --color-card-foreground: 15 23 42;
+  --color-card: 245 247 250;
+  --color-card-foreground: 33 33 33;
   
   /* Border & Input */
   --color-border: 226 232 240;
   --color-border-muted: 203 213 225;
   --color-input: 226 232 240;
-  --color-ring: 65 105 225;
+  --color-ring: 76 175 80;
+  
+  /* Neumorphic Shadows */
+  --shadow-outer: 8px 8px 16px rgba(176, 190, 197, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.8);
+  --shadow-inner: inset 4px 4px 8px rgba(176, 190, 197, 0.4), inset -4px -4px 8px rgba(255, 255, 255, 0.6);
+  --shadow-outer-sm: 4px 4px 8px rgba(176, 190, 197, 0.4), -4px -4px 8px rgba(255, 255, 255, 0.7);
+  --shadow-inner-sm: inset 2px 2px 4px rgba(176, 190, 197, 0.3), inset -2px -2px 4px rgba(255, 255, 255, 0.5);
   
   /* Radius */
-  --radius: 0.75rem;
+  --radius: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-md: 1rem;
+  --radius-sm: 0.75rem;
 }
 
 @theme inline {
@@ -41,22 +50,22 @@
   --color-primary-foreground: rgb(var(--color-primary-foreground));
   --color-secondary: rgb(var(--color-secondary));
   --color-secondary-foreground: rgb(var(--color-secondary-foreground));
+  --color-accent: rgb(var(--color-accent));
+  --color-accent-foreground: rgb(var(--color-accent-foreground));
   --color-destructive: rgb(var(--color-destructive));
   --color-destructive-foreground: rgb(var(--color-destructive-foreground));
   --color-muted: rgb(var(--color-muted));
   --color-muted-foreground: rgb(var(--color-muted-foreground));
-  --color-accent: rgb(var(--color-accent));
-  --color-accent-foreground: rgb(var(--color-accent-foreground));
   --color-card: rgb(var(--color-card));
   --color-card-foreground: rgb(var(--color-card-foreground));
   --color-border: rgb(var(--color-border));
   --color-border-muted: rgb(var(--color-border-muted));
   --color-input: rgb(var(--color-input));
-  --color-ring: rgb(var(--color-primary));
+  --color-ring: rgb(var(--color-ring));
   
-  --radius-lg: var(--radius);
-  --radius-md: 0.5rem;
-  --radius-sm: 0.25rem;
+  --radius-lg: var(--radius-lg);
+  --radius-md: var(--radius-md);
+  --radius-sm: var(--radius-sm);
 }
 
 /* Base styles */
@@ -65,9 +74,91 @@
 }
 
 body {
-  background-color: var(--color-muted);
+  background: linear-gradient(135deg, #F5F7FA 0%, #E4EBF5 100%);
   color: var(--color-card-foreground);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Inter', 'Poppins', system-ui, sans-serif;
+  font-weight: 500;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* Neumorphic Utility Classes */
+.neu-flat {
+  background: linear-gradient(145deg, #FFFFFF, #E8EDF2);
+  box-shadow: var(--shadow-outer);
+  border-radius: var(--radius);
+}
+
+.neu-pressed {
+  background: linear-gradient(145deg, #E8EDF2, #FFFFFF);
+  box-shadow: var(--shadow-inner);
+  border-radius: var(--radius);
+}
+
+.neu-convex {
+  background: linear-gradient(145deg, #FFFFFF, #E8EDF2);
+  box-shadow: var(--shadow-outer);
+  border-radius: var(--radius);
+}
+
+.neu-concave {
+  background: linear-gradient(145deg, #E8EDF2, #FFFFFF);
+  box-shadow: var(--shadow-inner);
+  border-radius: var(--radius);
+}
+
+.neu-button {
+  background: linear-gradient(145deg, #FFFFFF, #E8EDF2);
+  box-shadow: var(--shadow-outer-sm);
+  border-radius: var(--radius-md);
+  transition: all 0.3s ease;
+}
+
+.neu-button:hover {
+  box-shadow: var(--shadow-outer);
+  transform: translateY(-2px);
+}
+
+.neu-button:active {
+  box-shadow: var(--shadow-inner-sm);
+  transform: translateY(0);
+}
+
+.neu-input {
+  background: linear-gradient(145deg, #E8EDF2, #FFFFFF);
+  box-shadow: var(--shadow-inner);
+  border-radius: var(--radius-md);
+  border: none;
+  outline: none;
+}
+
+.neu-input:focus {
+  box-shadow: var(--shadow-inner), 0 0 0 2px rgba(76, 175, 80, 0.3);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F7FA;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #B0BEC5;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #90A4AE;
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(76, 175, 80, 0.2);
+  color: #212121;
 }
