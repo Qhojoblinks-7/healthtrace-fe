@@ -1,6 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
 import { DoctorLayout } from "./components/doctor/DoctorLayout";
+import { AdminLayout } from "./features/admin/components/AdminLayout";
+import { AdminRolesPage } from "./features/admin/pages/AdminRolesPage";
+import { AdminStationsPage } from "./features/admin/pages/AdminStationsPage";
 import { CommunityPulseDashboard } from "./components/doctor/CommunityPulseDashboard";
 import ConsultationPage from "./components/doctor/ConsultationPage";
 import { DoctorTriagePage } from "./pages/DoctorTriagePage";
@@ -32,6 +35,12 @@ function DoctorApp() {
           element={<ClinicalConsultationPage />}
         />
         <Route path="/report/:id" element={<PatientReport />} />
+
+        {/* Admin routes */}
+        <Route element={<AdminLayout />}>
+          <Route path="/admin/roles" element={<AdminRolesPage />} />
+          <Route path="/admin/stations" element={<AdminStationsPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

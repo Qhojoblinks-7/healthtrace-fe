@@ -1,50 +1,5 @@
 @import "tailwindcss";
 
-/* Neumorphic Theme CSS Variables */
-:root {
-  /* Primary - Eco-Tech Green */
-  --color-primary: 76 175 80;
-  --color-primary-foreground: 255 255 255;
-  
-  /* Secondary - Sky Blue */
-  --color-secondary: 33 150 243;
-  --color-secondary-foreground: 255 255 255;
-  
-  /* Accent - Warm Amber */
-  --color-accent: 255 193 7;
-  --color-accent-foreground: 33 33 33;
-  
-  /* Destructive */
-  --color-destructive: 220 38 38;
-  --color-destructive-foreground: 255 255 255;
-  
-  /* Muted */
-  --color-muted: 245 247 250;
-  --color-muted-foreground: 100 116 139;
-  
-  /* Card */
-  --color-card: 245 247 250;
-  --color-card-foreground: 33 33 33;
-  
-  /* Border & Input */
-  --color-border: 226 232 240;
-  --color-border-muted: 203 213 225;
-  --color-input: 226 232 240;
-  --color-ring: 76 175 80;
-  
-  /* Neumorphic Shadows */
-  --shadow-outer: 8px 8px 16px rgba(176, 190, 197, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.8);
-  --shadow-inner: inset 4px 4px 8px rgba(176, 190, 197, 0.4), inset -4px -4px 8px rgba(255, 255, 255, 0.6);
-  --shadow-outer-sm: 4px 4px 8px rgba(176, 190, 197, 0.4), -4px -4px 8px rgba(255, 255, 255, 0.7);
-  --shadow-inner-sm: inset 2px 2px 4px rgba(176, 190, 197, 0.3), inset -2px -2px 4px rgba(255, 255, 255, 0.5);
-  
-  /* Radius */
-  --radius: 1rem;
-  --radius-lg: 1.5rem;
-  --radius-md: 1rem;
-  --radius-sm: 0.75rem;
-}
-
 @theme inline {
   --color-primary: rgb(var(--color-primary));
   --color-primary-foreground: rgb(var(--color-primary-foreground));
@@ -62,54 +17,158 @@
   --color-border-muted: rgb(var(--color-border-muted));
   --color-input: rgb(var(--color-input));
   --color-ring: rgb(var(--color-ring));
-  
+  --color-background: rgb(var(--color-background));
+  --color-foreground: rgb(var(--color-foreground));
+  --color-popover: rgb(var(--color-popover));
+  --color-popover-foreground: rgb(var(--color-popover-foreground));
+
+  --color-success: rgb(var(--color-success));
+  --color-success-foreground: rgb(var(--color-success-foreground));
+  --color-warning: rgb(var(--color-warning));
+  --color-warning-foreground: rgb(var(--color-warning-foreground));
+  --color-info: rgb(var(--color-info));
+  --color-info-foreground: rgb(var(--color-info-foreground));
+
   --radius-lg: var(--radius-lg);
   --radius-md: var(--radius-md);
   --radius-sm: var(--radius-sm);
 }
 
-/* Base styles */
+:root {
+  --color-background: 245 247 250;
+  --color-foreground: 33 33 33;
+  --color-popover: 255 255 255;
+  --color-popover-foreground: 33 33 33;
+
+  --color-primary: 76 175 80;
+  --color-primary-foreground: 255 255 255;
+
+  --color-secondary: 33 150 243;
+  --color-secondary-foreground: 255 255 255;
+
+  --color-accent: 255 193 7;
+  --color-accent-foreground: 33 33 33;
+
+  --color-destructive: 220 38 38;
+  --color-destructive-foreground: 255 255 255;
+
+  --color-muted: 245 247 250;
+  --color-muted-foreground: 100 116 139;
+
+  --color-card: 245 247 250;
+  --color-card-foreground: 33 33 33;
+
+  --color-border: 226 232 240;
+  --color-border-muted: 203 213 225;
+  --color-input: 226 232 240;
+  --color-ring: 76 175 80;
+
+  --color-success: 34 197 94;
+  --color-success-foreground: 255 255 255;
+
+  --color-warning: 234 179 8;
+  --color-warning-foreground: 33 33 33;
+
+  --color-info: 59 130 246;
+  --color-info-foreground: 255 255 255;
+
+  --shadow-outer: 8px 8px 16px rgba(176, 190, 197, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.8);
+  --shadow-inner: inset 4px 4px 8px rgba(176, 190, 197, 0.4), inset -4px -4px 8px rgba(255, 255, 255, 0.6);
+  --shadow-outer-sm: 4px 4px 8px rgba(176, 190, 197, 0.4), -4px -4px 8px rgba(255, 255, 255, 0.7);
+  --shadow-inner-sm: inset 2px 2px 4px rgba(176, 190, 197, 0.3), inset -2px -2px 4px rgba(255, 255, 255, 0.5);
+
+  --radius: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-md: 1rem;
+  --radius-sm: 0.75rem;
+}
+
+.dark {
+  --color-background: 15 23 42;
+  --color-foreground: 241 245 249;
+  --color-popover: 30 41 59;
+  --color-popover-foreground: 241 245 249;
+
+  --color-primary: 129 140 248;
+  --color-primary-foreground: 30 41 59;
+
+  --color-secondary: 52 211 153;
+  --color-secondary-foreground: 30 41 59;
+
+  --color-accent: 253 224 71;
+  --color-accent-foreground: 30 41 59;
+
+  --color-destructive: 239 68 68;
+  --color-destructive-foreground: 255 255 255;
+
+  --color-muted: 30 41 59;
+  --color-muted-foreground: 148 163 184;
+
+  --color-card: 30 41 59;
+  --color-card-foreground: 241 245 249;
+
+  --color-border: 51 65 85;
+  --color-border-muted: 71 85 105;
+  --color-input: 51 65 85;
+  --color-ring: 129 140 248;
+
+  --color-success: 34 197 94;
+  --color-success-foreground: 30 41 59;
+
+  --color-warning: 234 179 8;
+  --color-warning-foreground: 30 41 59;
+
+  --color-info: 59 130 246;
+  --color-info-foreground: 30 41 59;
+
+  --shadow-outer: 8px 8px 16px rgba(0, 0, 0, 0.4), -8px -8px 16px rgba(255, 255, 255, 0.05);
+  --shadow-inner: inset 4px 4px 8px rgba(0, 0, 0, 0.3), inset -4px -4px 8px rgba(255, 255, 255, 0.05);
+  --shadow-outer-sm: 4px 4px 8px rgba(0, 0, 0, 0.3), -4px -4px 8px rgba(255, 255, 255, 0.05);
+  --shadow-inner-sm: inset 2px 2px 4px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.05);
+}
+
 * {
   border-color: var(--color-border);
 }
 
 body {
-  background: linear-gradient(135deg, #F5F7FA 0%, #E4EBF5 100%);
-  color: var(--color-card-foreground);
-  font-family: 'Inter', 'Poppins', system-ui, sans-serif;
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  font-family: "Inter", "Poppins", system-ui, sans-serif;
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Neumorphic Utility Classes */
 .neu-flat {
-  background: linear-gradient(145deg, #FFFFFF, #E8EDF2);
+  background: linear-gradient(145deg, rgb(var(--color-card)), rgb(var(--color-card)));
   box-shadow: var(--shadow-outer);
   border-radius: var(--radius);
 }
 
 .neu-pressed {
-  background: linear-gradient(145deg, #E8EDF2, #FFFFFF);
+  background: linear-gradient(145deg, rgb(var(--color-card)), rgb(var(--color-card)));
   box-shadow: var(--shadow-inner);
   border-radius: var(--radius);
 }
 
 .neu-convex {
-  background: linear-gradient(145deg, #FFFFFF, #E8EDF2);
+  background: linear-gradient(145deg, rgb(var(--color-card)), rgb(var(--color-card)));
   box-shadow: var(--shadow-outer);
   border-radius: var(--radius);
 }
 
 .neu-concave {
-  background: linear-gradient(145deg, #E8EDF2, #FFFFFF);
+  background: linear-gradient(145deg, rgb(var(--color-card)), rgb(var(--color-card)));
   box-shadow: var(--shadow-inner);
   border-radius: var(--radius);
 }
 
 .neu-button {
-  background: linear-gradient(145deg, #FFFFFF, #E8EDF2);
+  background: linear-gradient(145deg, rgb(var(--color-card)), rgb(var(--color-card)));
   box-shadow: var(--shadow-outer-sm);
   border-radius: var(--radius-md);
   transition: all 0.3s ease;
@@ -126,7 +185,7 @@ body {
 }
 
 .neu-input {
-  background: linear-gradient(145deg, #E8EDF2, #FFFFFF);
+  background: linear-gradient(145deg, rgb(var(--color-card)), rgb(var(--color-card)));
   box-shadow: var(--shadow-inner);
   border-radius: var(--radius-md);
   border: none;
@@ -144,21 +203,26 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #F5F7FA;
+  background: rgb(var(--color-background));
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #B0BEC5;
+  background: rgb(var(--color-muted-foreground));
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #90A4AE;
+  background: rgb(var(--color-foreground));
 }
 
 /* Selection styling */
 ::selection {
   background: rgba(76, 175, 80, 0.2);
   color: #212121;
+}
+
+.dark ::selection {
+  background: rgba(129, 140, 248, 0.3);
+  color: #f8fafc;
 }

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Bell, AlertCircle, AlertTriangle, Clock, X } from "lucide-react";
@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { screeningAPI } from "@/api";
 import { cn } from "@/lib/utils";
+import { useUIStore } from "@/store";
 
 export function NotificationDropdown({ sidebarCollapsed }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const isOpen = useUIStore((state) => state.notificationOpen);
+  const setNotificationOpen = useUIStore((state) => state.setNotificationOpen);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -26,17 +28,18 @@ export function NotificationDropdown({ sidebarCollapsed }) {
   // Mark notification as read mutation
   const markReadMutation = useMutation({
     mutationFn: (patientId) => screeningAPI.markNotificationRead(patientId),
-    onSuccess: (data) => {
-      // Update the notifications cache with new unread count
+    onSuccess: (data, patientId) => {
+      // Remove the notification from cache so it does not reappear on refetch
       queryClient.setQueryData(["notifications"], (oldData) => {
         if (!oldData) return oldData;
         return {
           ...oldData,
-          unread_count: data.data.unread_count,
+          notifications: (oldData.notifications || []).filter(
+            (n) => n.patient_id !== patientId
+          ),
+          unread_count: Math.max(0, (oldData.unread_count || 1) - 1),
         };
       });
-      // Also trigger a full refetch
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 
@@ -47,12 +50,12 @@ export function NotificationDropdown({ sidebarCollapsed }) {
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
+        setNotificationOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [setNotificationOpen]);
 
   const handleNotificationClick = (notification) => {
     // Mark notification as read
@@ -61,7 +64,7 @@ export function NotificationDropdown({ sidebarCollapsed }) {
     }
     // Navigate to patient consultation
     navigate(`/consultation/${notification.patient_id}`);
-    setIsOpen(false);
+    setNotificationOpen(false);
   };
 
   const formatTime = (timestamp) => {
@@ -80,10 +83,10 @@ export function NotificationDropdown({ sidebarCollapsed }) {
       <Button
         variant="ghost"
         className={cn(
-          "text-muted-foreground hover:text-card-foreground hover:bg-gradient-to-br hover:from-white hover:to-[#E8EDF2] hover:shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)] relative",
+          "text-muted-foreground hover:text-card-foreground hover:bg-gradient-to-br hover:from-white hover:to-[#E8EDF2] dark:hover:from-background dark:hover:to-card hover:shadow-neu-outer-sm dark:hover:shadow-neu-outer relative",
           sidebarCollapsed ? "w-10 h-10 p-0" : "w-auto h-10 px-3",
         )}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setNotificationOpen(!isOpen)}
       >
         <Bell className="h-5 w-5" />
         {!sidebarCollapsed && <span className="ml-2">Notifications</span>}
@@ -96,13 +99,13 @@ export function NotificationDropdown({ sidebarCollapsed }) {
 
       {/* Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-96 bg-gradient-to-br from-white to-[#E8EDF2] rounded-2xl shadow-[8px_8px_16px_rgba(176,190,197,0.5),-8px_-8px_16px_rgba(255,255,255,0.8)] z-50 max-h-[500px] overflow-hidden">
+        <div className="absolute right-0 mt-2 w-96 bg-gradient-to-br from-white to-[#E8EDF2] dark:from-background dark:to-card rounded-2xl shadow-neu-outer dark:shadow-neu-outer z-50 max-h-[500px] overflow-hidden">
           <div className="p-3 border-b border-border flex items-center justify-between">
             <h3 className="font-semibold text-card-foreground">Notifications</h3>
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setIsOpen(false)}
+              onClick={() => setNotificationOpen(false)}
               className="h-6 w-6 p-0"
             >
               <X className="h-4 w-4" />
@@ -128,15 +131,15 @@ export function NotificationDropdown({ sidebarCollapsed }) {
                 <div
                   key={notification.id}
                   className={cn(
-                    "p-3 border-b border-border cursor-pointer hover:bg-gradient-to-br hover:from-white hover:to-[#E8EDF2] transition-all",
-                    !notification.read && "bg-gradient-to-br from-blue-50 to-blue-100",
+                    "p-3 border-b border-border cursor-pointer hover:bg-gradient-to-br hover:from-white hover:to-[#E8EDF2] dark:hover:from-background dark:hover:to-card transition-all",
+                    !notification.read && "bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10",
                   )}
                   onClick={() => handleNotificationClick(notification)}
                 >
                   <div className="flex items-start gap-3">
                     <div
                       className={cn(
-                        "p-2 rounded-full bg-gradient-to-br from-white to-[#E8EDF2] shadow-[2px_2px_4px_rgba(176,190,197,0.4),-2px_-2px_4px_rgba(255,255,255,0.7)]",
+                        "p-2 rounded-full bg-gradient-to-br from-white to-[#E8EDF2] shadow-[2px_2px_4px_rgba(176,190,197,0.4),-2px_-2px_4px_rgba(255,255,255,0.7)] dark:from-background dark:to-card dark:shadow-[2px_2px_4px_rgba(0,0,0,0.3),-2px_-2px_4px_rgba(255,255,255,0.05)]",
                         notification.type === "critical"
                           ? "text-destructive"
                           : "text-accent",
@@ -170,14 +173,14 @@ export function NotificationDropdown({ sidebarCollapsed }) {
           </div>
 
           {notifications.length > 0 && (
-            <div className="p-2 border-t border-slate-200">
+            <div className="p-2 border-t border-border">
               <Button
                 variant="outline"
                 size="sm"
                 className="w-full"
                 onClick={() => {
                   navigate("/");
-                  setIsOpen(false);
+                  setNotificationOpen(false);
                 }}
               >
                 View All Patients

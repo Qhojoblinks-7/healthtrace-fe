@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -39,6 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useReportsStore } from "@/store";
 
 /**
  * ReportsPage - Shows list of all patient screenings with filtering
@@ -46,10 +46,7 @@ import {
  */
 export function ReportsPage() {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [dateFilter, setDateFilter] = useState("all");
-  const [page, setPage] = useState(1);
+  const { searchQuery, setSearchQuery, statusFilter, setStatusFilter, dateFilter, setDateFilter, page, setPage } = useReportsStore();
   const pageSize = 20;
 
   // Fetch all screenings with pagination
@@ -131,10 +128,10 @@ export function ReportsPage() {
 
   // Get status color for blood pressure
   const getBPStatusColor = (bp) => {
-    if (!bp) return "text-gray-500";
+    if (!bp) return "text-muted-foreground";
     const systolic = bp.systolic_bp;
     const diastolic = bp.diastolic_bp;
-    if (!systolic || !diastolic) return "text-gray-500";
+    if (!systolic || !diastolic) return "text-muted-foreground";
     if (systolic > 180 || diastolic > 120) return "text-red-600 font-bold";
     if (systolic >= 140 || diastolic >= 90) return "text-red-500";
     if (systolic >= 130 || diastolic >= 80) return "text-orange-500";
@@ -396,7 +393,7 @@ export function ReportsPage() {
                         {screening.has_consultation ? (
                           <Badge
                             variant="outline"
-                            className="text-xs bg-green-50 text-green-700 border-green-300"
+                            className="text-xs bg-success/10 text-success border-success/30"
                           >
                             <CheckCircle className="h-3 w-3 mr-1" />
                             Consulted
@@ -404,7 +401,7 @@ export function ReportsPage() {
                         ) : (
                           <Badge
                             variant="outline"
-                            className="text-xs bg-yellow-50 text-yellow-700 border-yellow-300"
+                            className="text-xs bg-warning/10 text-warning border-warning/30"
                           >
                             <Clock className="h-3 w-3 mr-1" />
                             Pending

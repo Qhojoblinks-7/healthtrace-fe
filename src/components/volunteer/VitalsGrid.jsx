@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { Activity, TrendingUp, AlertTriangle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useScreeningStore } from "@/store";
+import { useValidationStore } from "@/store";
 
 // Clinical validation ranges (medical safe ranges)
 const VITAL_RANGES = {
@@ -25,65 +26,33 @@ const VITAL_RANGES = {
 const WARNING_THRESHOLDS = {
   systolic_bp: { warning: 140, critical: 180 },
   diastolic_bp: { warning: 90, critical: 120 },
-  glucose_level: { warning: 200, critical: 400 },
+  glucose_level: { warning: 200, critical: 250 },
 };
 
 /**
  * VitalsGrid - Clinical measurements component
  * Responsive 2x3 grid: Height, Weight, Systolic, Diastolic, Glucose
- * Real-time pre-validation with TanStack Query pattern
+ * Real-time pre-validation with centralized health calculations
  */
 export function VitalsGrid() {
-  const { screeningFormData, updateFormData } = useScreeningStore();
-  const [warnings, setWarnings] = useState({});
+  const { formFields, setFormField, updateFormData } = useScreeningStore();
+  const warnings = useValidationStore((state) => state.errors);
+  const setFieldError = useValidationStore((state) => state.setFieldError);
+  const clearFieldError = useValidationStore((state) => state.clearFieldError);
 
-  // Local state for form fields
-  const [heightCm, setHeightCm] = useState(screeningFormData.height_cm || "");
-  const [weightKg, setWeightKg] = useState(screeningFormData.weight_kg || "");
-  const [systolicBp, setSystolicBp] = useState(
-    screeningFormData.systolic_bp || "",
-  );
-  const [diastolicBp, setDiastolicBp] = useState(
-    screeningFormData.diastolic_bp || "",
-  );
-  const [glucoseLevel, setGlucoseLevel] = useState(
-    screeningFormData.glucose_level || "",
-  );
+  const heightCm = formFields.height_cm;
+  const weightKg = formFields.weight_kg;
+  const systolicBp = formFields.systolic_bp;
+  const diastolicBp = formFields.diastolic_bp;
+  const glucoseLevel = formFields.glucose_level;
 
-  // Update store when fields change
-  useEffect(() => {
-    updateFormData({ height_cm: heightCm ? parseFloat(heightCm) : null });
-  }, [heightCm, updateFormData]);
-
-  useEffect(() => {
-    updateFormData({ weight_kg: weightKg ? parseFloat(weightKg) : null });
-  }, [weightKg, updateFormData]);
-
-  useEffect(() => {
-    updateFormData({ systolic_bp: systolicBp ? parseInt(systolicBp) : null });
-  }, [systolicBp, updateFormData]);
-
-  useEffect(() => {
-    updateFormData({
-      diastolic_bp: diastolicBp ? parseInt(diastolicBp) : null,
-    });
-  }, [diastolicBp, updateFormData]);
-
-  useEffect(() => {
-    updateFormData({
-      glucose_level: glucoseLevel ? parseFloat(glucoseLevel) : null,
-    });
-  }, [glucoseLevel, updateFormData]);
-
-  // Pre-validation function - checks if values are in safe range
   const validateVital = useCallback((field, value) => {
-    if (!value) return null;
+    if (!value && value !== 0) return null;
 
     const numValue = parseFloat(value);
     const range = VITAL_RANGES[field];
     const thresholds = WARNING_THRESHOLDS[field];
 
-    // Check basic range
     if (numValue < range.min || numValue > range.max) {
       return {
         type: "error",
@@ -91,7 +60,6 @@ export function VitalsGrid() {
       };
     }
 
-    // Check warning thresholds for BP and Glucose
     if (thresholds) {
       if (numValue >= thresholds.critical) {
         return {
@@ -110,38 +78,72 @@ export function VitalsGrid() {
     return null;
   }, []);
 
-  // Handle field changes with pre-validation
-  const handleFieldChange = (setter) => (e) => {
+  const handleFieldChange = (field) => (e) => {
     const value = e.target.value;
-    // Only allow numbers and decimal point
     if (value === "" || /^\d*\.?\d*$/.test(value)) {
-      setter(value);
+      setFormField(field, value);
     }
   };
 
+  // Sync numeric fields to screeningFormData for submission
+  useEffect(() => {
+    updateFormData({ height_cm: heightCm ? parseFloat(heightCm) : null });
+  }, [heightCm, updateFormData]);
+
+  useEffect(() => {
+    updateFormData({ weight_kg: weightKg ? parseFloat(weightKg) : null });
+  }, [weightKg, updateFormData]);
+
+  useEffect(() => {
+    updateFormData({ systolic_bp: systolicBp ? parseInt(systolicBp, 10) : null });
+  }, [systolicBp, updateFormData]);
+
+  useEffect(() => {
+    updateFormData({ diastolic_bp: diastolicBp ? parseInt(diastolicBp, 10) : null });
+  }, [diastolicBp, updateFormData]);
+
+  useEffect(() => {
+    updateFormData({ glucose_level: glucoseLevel ? parseFloat(glucoseLevel) : null });
+  }, [glucoseLevel, updateFormData]);
+
   // Check for warnings on each change
   useEffect(() => {
-    const newWarnings = {};
-
     if (systolicBp) {
       const result = validateVital("systolic_bp", systolicBp);
-      if (result) newWarnings.systolic_bp = result;
+      if (result) {
+        setFieldError("systolic_bp", result);
+      } else {
+        clearFieldError("systolic_bp");
+      }
+    } else {
+      clearFieldError("systolic_bp");
     }
+
     if (diastolicBp) {
       const result = validateVital("diastolic_bp", diastolicBp);
-      if (result) newWarnings.diastolic_bp = result;
+      if (result) {
+        setFieldError("diastolic_bp", result);
+      } else {
+        clearFieldError("diastolic_bp");
+      }
+    } else {
+      clearFieldError("diastolic_bp");
     }
+
     if (glucoseLevel) {
       const result = validateVital("glucose_level", glucoseLevel);
-      if (result) newWarnings.glucose_level = result;
+      if (result) {
+        setFieldError("glucose_level", result);
+      } else {
+        clearFieldError("glucose_level");
+      }
+    } else {
+      clearFieldError("glucose_level");
     }
+  }, [systolicBp, diastolicBp, glucoseLevel, validateVital, setFieldError, clearFieldError]);
 
-    setWarnings(newWarnings);
-  }, [systolicBp, diastolicBp, glucoseLevel, validateVital]);
-
-  // Get status color for field
   const getFieldStatus = (field, value) => {
-    if (!value) return "default";
+    if (!value && value !== 0) return "default";
     const validation = validateVital(field, value);
     if (!validation) return "success";
     if (validation.type === "critical") return "critical";
@@ -162,7 +164,6 @@ export function VitalsGrid() {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {/* Warnings Display */}
         {Object.keys(warnings).length > 0 && (
           <div className="space-y-2">
             {Object.entries(warnings).map(([field, warning]) => (
@@ -175,19 +176,11 @@ export function VitalsGrid() {
                       ? "info"
                       : "default"
                 }
-                className={
-                  warning.type === "warning"
-                    ? "bg-yellow-50 border-yellow-300"
-                    : ""
-                }
+                className={warning.type === "warning" ? "bg-warning/10 border-warning/300" : ""}
               >
-                {warning.type === "critical" && (
-                  <AlertTriangle className="h-4 w-4" />
-                )}
+                {warning.type === "critical" && <AlertTriangle className="h-4 w-4" />}
                 <AlertDescription className="flex items-center gap-2">
-                  {warning.type === "critical" && (
-                    <TrendingUp className="h-4 w-4" />
-                  )}
+                  {warning.type === "critical" && <TrendingUp className="h-4 w-4" />}
                   {warning.message}
                 </AlertDescription>
               </Alert>
@@ -195,9 +188,7 @@ export function VitalsGrid() {
           </div>
         )}
 
-        {/* Responsive 2x3 Grid for Vitals */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-          {/* Height */}
           <div className="space-y-2">
             <Label htmlFor="height">Height (cm)</Label>
             <Input
@@ -206,7 +197,7 @@ export function VitalsGrid() {
               inputMode="decimal"
               placeholder="175"
               value={heightCm}
-              onChange={handleFieldChange(setHeightCm)}
+              onChange={handleFieldChange("height_cm")}
               className={
                 getFieldStatus("height_cm", heightCm) === "success"
                   ? "border-green-500"
@@ -217,7 +208,6 @@ export function VitalsGrid() {
             />
           </div>
 
-          {/* Weight */}
           <div className="space-y-2">
             <Label htmlFor="weight">Weight (kg)</Label>
             <Input
@@ -226,7 +216,7 @@ export function VitalsGrid() {
               inputMode="decimal"
               placeholder="70"
               value={weightKg}
-              onChange={handleFieldChange(setWeightKg)}
+              onChange={handleFieldChange("weight_kg")}
               className={
                 getFieldStatus("weight_kg", weightKg) === "success"
                   ? "border-green-500"
@@ -237,7 +227,6 @@ export function VitalsGrid() {
             />
           </div>
 
-          {/* Systolic BP */}
           <div className="space-y-2">
             <Label htmlFor="systolic">Systolic (mmHg)</Label>
             <Input
@@ -246,7 +235,7 @@ export function VitalsGrid() {
               inputMode="numeric"
               placeholder="120"
               value={systolicBp}
-              onChange={handleFieldChange(setSystolicBp)}
+              onChange={handleFieldChange("systolic_bp")}
               className={
                 getFieldStatus("systolic_bp", systolicBp) === "critical"
                   ? "border-red-600 animate-pulse"
@@ -259,7 +248,6 @@ export function VitalsGrid() {
             />
           </div>
 
-          {/* Diastolic BP */}
           <div className="space-y-2">
             <Label htmlFor="diastolic">Diastolic (mmHg)</Label>
             <Input
@@ -268,7 +256,7 @@ export function VitalsGrid() {
               inputMode="numeric"
               placeholder="80"
               value={diastolicBp}
-              onChange={handleFieldChange(setDiastolicBp)}
+              onChange={handleFieldChange("diastolic_bp")}
               className={
                 getFieldStatus("diastolic_bp", diastolicBp) === "critical"
                   ? "border-red-600 animate-pulse"
@@ -281,7 +269,6 @@ export function VitalsGrid() {
             />
           </div>
 
-          {/* Glucose - spans 2 cols on mobile */}
           <div className="col-span-2 md:col-span-1 space-y-2">
             <Label htmlFor="glucose">Glucose (mg/dL)</Label>
             <Input
@@ -290,14 +277,13 @@ export function VitalsGrid() {
               inputMode="decimal"
               placeholder="100"
               value={glucoseLevel}
-              onChange={handleFieldChange(setGlucoseLevel)}
+              onChange={handleFieldChange("glucose_level")}
               className={
                 getFieldStatus("glucose_level", glucoseLevel) === "critical"
                   ? "border-red-600 animate-pulse"
                   : getFieldStatus("glucose_level", glucoseLevel) === "warning"
                     ? "border-yellow-500"
-                    : getFieldStatus("glucose_level", glucoseLevel) ===
-                        "success"
+                    : getFieldStatus("glucose_level", glucoseLevel) === "success"
                       ? "border-green-500"
                       : ""
               }
@@ -305,7 +291,6 @@ export function VitalsGrid() {
           </div>
         </div>
 
-        {/* Quick Reference - Responsive */}
         <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t">
           <p className="font-medium">Quick Reference:</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2 text-xs">
@@ -325,5 +310,3 @@ export function VitalsGrid() {
     </Card>
   );
 }
-
-export default VitalsGrid;

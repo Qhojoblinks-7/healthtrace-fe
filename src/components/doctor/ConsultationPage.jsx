@@ -35,7 +35,7 @@ export function ConsultationPage() {
   const getStatusBadge = (patient) => {
     if (patient.has_consultation) {
       return (
-        <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+        <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
           Completed
         </span>
       );
@@ -46,13 +46,13 @@ export function ConsultationPage() {
       patient.diastolic_bp > 120
     ) {
       return (
-        <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+        <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
           Crisis
         </span>
       );
     }
     return (
-      <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+      <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300">
         Pending
       </span>
     );
@@ -114,10 +114,10 @@ export function ConsultationPage() {
               onClick={() =>
                 navigate(`/consultation/${patient.id}`, { state: { patient } })
               }
-              className="flex items-center justify-between p-4 bg-gradient-to-br from-white to-[#E8EDF2] rounded-2xl shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)] hover:shadow-[8px_8px_16px_rgba(176,190,197,0.5),-8px_-8px_16px_rgba(255,255,255,0.8)] cursor-pointer transition-all"
+              className="flex items-center justify-between p-4 bg-gradient-to-br from-white to-[#E8EDF2] dark:from-background dark:to-card rounded-2xl shadow-neu-outer-sm dark:shadow-neu-outer hover:shadow-neu-outer dark:hover:shadow-neu-outer cursor-pointer transition-all"
             >
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-primary-600 flex items-center justify-center text-primary-foreground font-bold shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)]">
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-primary-600 flex items-center justify-center text-primary-foreground font-bold shadow-neu-outer-sm dark:shadow-neu-outer">
                   {patient.full_name?.charAt(0) || "U"}
                 </div>
                 <div>

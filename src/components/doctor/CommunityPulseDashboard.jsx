@@ -119,10 +119,10 @@ export function CommunityPulseDashboard() {
 
   // Get status color for table
   const getStatusColor = (bp) => {
-    if (!bp) return "text-gray-500";
+    if (!bp) return "text-muted-foreground";
     const systolic = bp.systolic_bp;
     const diastolic = bp.diastolic_bp;
-    if (!systolic || !diastolic) return "text-gray-500";
+    if (!systolic || !diastolic) return "text-muted-foreground";
     if (systolic > 180 || diastolic > 120) return "text-red-600 font-bold";
     if (systolic >= 140 || diastolic >= 90) return "text-red-500";
     if (systolic >= 130 || diastolic >= 80) return "text-orange-500";
@@ -166,7 +166,7 @@ export function CommunityPulseDashboard() {
                   {stats?.total_screened || 0}
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-white to-[#E8EDF2] rounded-full shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)]">
+              <div className="p-3 bg-gradient-to-br from-white to-[#E8EDF2] dark:from-background dark:to-card rounded-full shadow-neu-outer-sm dark:shadow-neu-outer">
                 <Users className="h-6 w-6 text-primary" />
               </div>
             </div>
@@ -186,7 +186,7 @@ export function CommunityPulseDashboard() {
                   {stats?.high_bp_count || 0}
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-white to-[#E8EDF2] rounded-full shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)]">
+              <div className="p-3 bg-gradient-to-br from-white to-[#E8EDF2] dark:from-background dark:to-card rounded-full shadow-neu-outer-sm dark:shadow-neu-outer">
                 <AlertTriangle className="h-6 w-6 text-destructive" />
               </div>
             </div>
@@ -210,7 +210,7 @@ export function CommunityPulseDashboard() {
                   {stats?.pending_consultations || 0}
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-white to-[#E8EDF2] rounded-full shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)]">
+              <div className="p-3 bg-gradient-to-br from-white to-[#E8EDF2] dark:from-background dark:to-card rounded-full shadow-neu-outer-sm dark:shadow-neu-outer">
                 <Heart className="h-6 w-6 text-accent" />
               </div>
             </div>
@@ -221,130 +221,129 @@ export function CommunityPulseDashboard() {
         </Card>
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Age Distribution - Bar Chart using shadcn */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              Age Distribution
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {analytics?.age_distribution ? (
+      {/* Charts */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Analytics</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Age Distribution */}
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-4 flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-primary" />
+                Age Distribution
+              </h3>
+              {analytics?.age_distribution ? (
+                <ChartContainer
+                  config={ageChartConfig}
+                  className="w-full h-[250px]"
+                >
+                  <BarChart
+                    data={ageChartData}
+                    layout="vertical"
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="currentColor" className="text-border/50" />
+                    <XAxis type="number" hide />
+                    <YAxis
+                      dataKey="ageGroup"
+                      type="category"
+                      tick={{ fontSize: 12, fill: "currentColor" }}
+                      width={50}
+                    />
+                    <ChartTooltip
+                      content={<ChartTooltipContent />}
+                      cursor={{ fill: "transparent" }}
+                    />
+                    <Bar
+                      dataKey="count"
+                      fill="var(--color-count)"
+                      radius={4}
+                      barSize={30}
+                    />
+                  </BarChart>
+                </ChartContainer>
+              ) : (
+                <div className="h-32 flex items-center justify-center text-muted-foreground">
+                  No data available
+                </div>
+              )}
+            </div>
+
+            {/* Blood Pressure Status */}
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-4 flex items-center gap-2">
+                <Heart className="h-4 w-4 text-primary" />
+                Blood Pressure Status
+              </h3>
               <ChartContainer
-                config={ageChartConfig}
-                className="w-full h-[250px]"
+                config={bpChartConfig}
+                className="mx-auto aspect-square max-h-[250px]"
               >
-                <BarChart
-                  data={ageChartData}
-                  layout="vertical"
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                  <XAxis type="number" hide />
-                  <YAxis
-                    dataKey="ageGroup"
-                    type="category"
-                    tick={{ fontSize: 12 }}
-                    width={50}
-                  />
+                <PieChart>
+                  <Pie
+                    data={bpChartData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={80}
+                    paddingAngle={2}
+                  >
+                    <LabelList
+                      dataKey="name"
+                      className="fill-foreground"
+                      stroke="none"
+                      fontSize={12}
+                    />
+                  </Pie>
                   <ChartTooltip
-                    content={<ChartTooltipContent />}
-                    cursor={{ fill: "transparent" }}
+                    content={<ChartTooltipContent nameKey="name" />}
                   />
-                  <Bar
-                    dataKey="count"
-                    fill="var(--color-count)"
-                    radius={4}
-                    barSize={30}
-                  />
-                </BarChart>
+                </PieChart>
               </ChartContainer>
-            ) : (
-              <div className="h-32 flex items-center justify-center text-muted-foreground">
-                No data available
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
-        {/* Blood Pressure Status - Pie Chart using shadcn/Recharts */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Heart className="h-5 w-5 text-primary" />
-              Blood Pressure Status
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer
-              config={bpChartConfig}
-              className="mx-auto aspect-square max-h-[250px]"
-            >
-              <PieChart>
-                <Pie
-                  data={bpChartData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={50}
-                  outerRadius={80}
-                  paddingAngle={2}
-                >
-                  <LabelList
-                    dataKey="name"
-                    className="fill-foreground"
-                    stroke="none"
-                    fontSize={12}
+              {/* Legend */}
+              <div className="flex justify-center gap-6 mt-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-green-500" />
+                  <span className="text-sm">Normal: {normalBP}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-red-500" />
+                  <span className="text-sm">High: {highBP}</span>
+                </div>
+              </div>
+
+              {/* Progress Bar Version */}
+              <div className="mt-6 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Normal BP</span>
+                  <span>
+                    {total > 0 ? ((normalBP / total) * 100).toFixed(1) : 0}%
+                  </span>
+                </div>
+                <div className="h-4 bg-gradient-to-br from-[#E8EDF2] to-white dark:from-background dark:to-card rounded-full overflow-hidden flex shadow-neu-inner-sm dark:shadow-neu-inner">
+                  <div
+                    className="h-full bg-gradient-to-r from-primary to-primary-600"
+                    style={{
+                      width: `${total > 0 ? (normalBP / total) * 100 : 0}%`,
+                    }}
                   />
-                </Pie>
-                <ChartTooltip
-                  content={<ChartTooltipContent nameKey="name" />}
-                />
-              </PieChart>
-            </ChartContainer>
-
-            {/* Legend */}
-            <div className="flex justify-center gap-6 mt-4">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-green-500" />
-                <span className="text-sm">Normal: {normalBP}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-red-500" />
-                <span className="text-sm">High: {highBP}</span>
+                  <div
+                    className="h-full bg-gradient-to-r from-destructive to-destructive-600"
+                    style={{
+                      width: `${total > 0 ? (highBP / total) * 100 : 0}%`,
+                    }}
+                  />
+                </div>
               </div>
             </div>
-
-            {/* Progress Bar Version */}
-            <div className="mt-6 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Normal BP</span>
-                <span>
-                  {total > 0 ? ((normalBP / total) * 100).toFixed(1) : 0}%
-                </span>
-              </div>
-              <div className="h-4 bg-gradient-to-br from-[#E8EDF2] to-white rounded-full overflow-hidden flex shadow-[inset_2px_2px_4px_rgba(176,190,197,0.3),inset_-2px_-2px_4px_rgba(255,255,255,0.5)]">
-                <div
-                  className="h-full bg-gradient-to-r from-primary to-primary-600"
-                  style={{
-                    width: `${total > 0 ? (normalBP / total) * 100 : 0}%`,
-                  }}
-                />
-                <div
-                  className="h-full bg-gradient-to-r from-destructive to-destructive-600"
-                  style={{
-                    width: `${total > 0 ? (highBP / total) * 100 : 0}%`,
-                  }}
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Live Feed - Recent Screenings */}
       <Card>

@@ -6,25 +6,20 @@ import {
   ArrowLeft,
   Activity,
   Heart,
-  TrendingUp,
   User,
-  Phone,
-  FileText,
+  Building2,
+  MessageCircle,
   AlertTriangle,
   CheckCircle,
   Stethoscope,
-  Calendar,
-  Building2,
-  MessageCircle,
+  Shield,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { screeningAPI } from "@/api";
 
-// Helper to calculate health score
 const calculateHealthScore = (screening) => {
   let score = 100;
   const issues = [];
@@ -71,6 +66,32 @@ const calculateHealthScore = (screening) => {
   return { score: Math.max(0, score), issues };
 };
 
+const VITAL_RANGES = {
+  blood_pressure: { normal: "90-120 / 60-80", unit: "mmHg" },
+  glucose: { normal: "70-99", unit: "mg/dL" },
+  bmi: { normal: "18.5-24.9", unit: "kg/m²" },
+  heart_rate: { normal: "60-100", unit: "BPM" },
+};
+
+const getRiskLevel = (score) => {
+  if (score >= 80) return { label: "Low Risk", color: "text-green-700", bg: "bg-green-50" };
+  if (score >= 60) return { label: "Moderate Risk", color: "text-yellow-700", bg: "bg-yellow-50" };
+  if (score >= 40) return { label: "High Risk", color: "text-orange-700", bg: "bg-orange-50" };
+  return { label: "Critical Risk", color: "text-red-700", bg: "bg-red-50" };
+};
+
+const STATUS_BADGE = {
+  Crisis: { className: "bg-red-100 text-red-800 border-red-300" },
+  Elevated: { className: "bg-orange-50 text-orange-800 border-orange-300" },
+  Normal: { className: "bg-green-50 text-green-800 border-green-300" },
+  Diabetes: { className: "bg-red-100 text-red-800 border-red-300" },
+  Prediabetes: { className: "bg-orange-50 text-orange-800 border-orange-300" },
+  Obese: { className: "bg-red-100 text-red-800 border-red-300" },
+  Overweight: { className: "bg-orange-50 text-orange-800 border-orange-300" },
+  High: { className: "bg-red-100 text-red-800 border-red-300" },
+  Low: { className: "bg-orange-50 text-orange-800 border-orange-300" },
+};
+
 export function PatientReport() {
   const { id } = useParams();
   const location = useLocation();
@@ -90,40 +111,34 @@ export function PatientReport() {
   const healthScore = patient
     ? calculateHealthScore(patient)
     : { score: 0, issues: [] };
+  const risk = getRiskLevel(healthScore.score);
 
   const handlePrint = () => {
     window.print();
   };
 
-  // Generate PDF and send via WhatsApp
   const handleSendToWhatsApp = async () => {
     if (!patient.phone_number) {
       alert("No phone number available for this patient");
       return;
     }
 
-    // Format phone number
     let phone = patient.phone_number.replace(/\D/g, "");
     if (phone.length === 10) {
       phone = "233" + phone.substring(1);
     }
 
-    // Show loading state
     const btn = document.activeElement;
     if (btn) btn.textContent = "Generating PDF...";
 
     try {
-      // Dynamically import html2pdf.js
       const html2pdf = (await import("html2pdf.js")).default;
-
-      // Get the report content element
       const element = reportRef.current;
       if (!element) {
         alert("Unable to generate report");
         return;
       }
 
-      // Generate PDF
       const opt = {
         margin: 10,
         filename: `HealthTrace_Report_${patient.full_name.replace(/\s+/g, "_")}_${new Date().toISOString().split("T")[0]}.pdf`,
@@ -132,13 +147,11 @@ export function PatientReport() {
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
       };
 
-      // Generate PDF blob
       const pdfBlob = await html2pdf()
         .set(opt)
         .from(element)
         .outputPdf("blob");
 
-      // Try to use Web Share API on mobile (supports file sharing)
       if (navigator.share && navigator.canShare) {
         const file = new File([pdfBlob], opt.filename, { type: "application/pdf" });
         const shareData = {
@@ -153,7 +166,6 @@ export function PatientReport() {
         }
       }
 
-      // Fallback: Download PDF and open WhatsApp for manual sharing
       const url = URL.createObjectURL(pdfBlob);
       const link = document.createElement("a");
       link.href = url;
@@ -163,7 +175,6 @@ export function PatientReport() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      // Open WhatsApp with a message
       const message = encodeURIComponent(
         `Hello ${patient.full_name}, please find attached your health report from the Community Health Screening.`
       );
@@ -196,25 +207,42 @@ export function PatientReport() {
     );
   }
 
+  const getStatusBadge = (status, type) => {
+    if (!status) return null;
+    const statusKey = Object.keys(STATUS_BADGE).find(key => status.includes(key));
+    if (!statusKey) return null;
+    return (
+      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${STATUS_BADGE[statusKey].className}`}>
+        {status}
+      </span>
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Navigation - hidden in print */}
-      <div className="bg-slate-900 text-white px-6 py-4 print:hidden">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
+    <div className="min-h-screen bg-gray-100">
+      <div className="no-print bg-slate-900 text-white px-6 py-4 sticky top-0 z-50">
+        <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate(-1)}
+              className="text-white hover:bg-slate-800"
+            >
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
               <h1 className="text-lg font-bold">Patient Report</h1>
-              <p className="text-sm text-slate-400">Printable health summary</p>
+              <p className="text-sm text-slate-400">
+                {patient.full_name} - {patient.token_id || patient.id}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Button
               onClick={handleSendToWhatsApp}
               variant="outline"
-              className="gap-2"
+              className="gap-2 border-slate-600 text-white hover:bg-slate-800"
             >
               <MessageCircle className="h-4 w-4" />
               Send to WhatsApp
@@ -227,287 +255,352 @@ export function PatientReport() {
         </div>
       </div>
 
-      {/* Report Content */}
-      <div ref={reportRef} className="max-w-4xl mx-auto p-8 print:p-0">
-        {/* Header with Church Logo */}
-        <div className="text-center border-b-2 border-slate-800 pb-6 mb-8">
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <Building2 className="h-10 w-10 text-slate-800" />
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">
-                Community Health Screening
-              </h1>
-              <p className="text-slate-600">Medical Report</p>
-            </div>
-          </div>
-          <p className="text-sm text-slate-500">
-            Generated on{" "}
-            {new Date().toLocaleDateString("en-US", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
-        </div>
-
-        {/* Patient Info Section */}
-        <div className="mb-8">
-          <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Patient Information
-          </h2>
-          <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-lg">
-            <div>
-              <Label className="text-slate-500 text-xs">Full Name</Label>
-              <p className="font-semibold text-lg">{patient.full_name}</p>
-            </div>
-            <div>
-              <Label className="text-slate-500 text-xs">Age / Gender</Label>
-              <p className="font-medium">
-                {patient.age} years / {patient.gender}
-              </p>
-            </div>
-            <div>
-              <Label className="text-slate-500 text-xs">Phone</Label>
-              <p className="font-medium">{patient.phone_number || "N/A"}</p>
-            </div>
-            <div>
-              <Label className="text-slate-500 text-xs">Screening Date</Label>
-              <p className="font-medium">
-                {new Date(patient.created_at).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Health Score */}
-        <div className="mb-8">
-          <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-            <Activity className="h-5 w-5" />
-            Health Assessment
-          </h2>
-          <div className="bg-slate-50 p-6 rounded-lg">
-            <div className="text-center mb-4">
-              <div
-                className={`text-5xl font-bold ${
-                  healthScore.score >= 80
-                    ? "text-green-600"
-                    : healthScore.score >= 60
-                      ? "text-yellow-600"
-                      : healthScore.score >= 40
-                        ? "text-orange-600"
-                        : "text-red-600"
-                }`}
-              >
-                {healthScore.score}
-                <span className="text-xl text-slate-500">/100</span>
+      <div ref={reportRef} className="max-w-5xl mx-auto bg-white shadow-lg print:shadow-none">
+        <div className="p-6 print:p-8">
+          {/* Header */}
+          <div className="border-b-2 border-slate-800 pb-4 mb-6">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-slate-800 rounded-lg">
+                  <Building2 className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-slate-900">
+                    Community Health Screening
+                  </h1>
+                  <p className="text-sm text-slate-600">
+                    Patient Health Assessment Report
+                  </p>
+                </div>
               </div>
-              <p className="text-slate-600 mt-1">Overall Health Score</p>
+              <div className="text-right text-xs text-slate-600">
+                <p className="font-medium">Report Generated</p>
+                <p>
+                  {new Date().toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </p>
+                <p>
+                  {new Date().toLocaleTimeString("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Patient Information */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <User className="h-4 w-4 text-slate-700" />
+              <h2 className="text-base font-bold text-slate-900 uppercase tracking-wide">
+                Patient Information
+              </h2>
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              <div>
+                <Label className="text-xs font-medium text-slate-500 uppercase">Full Name</Label>
+                <p className="font-semibold text-slate-900 mt-1">{patient.full_name}</p>
+              </div>
+              <div>
+                <Label className="text-xs font-medium text-slate-500 uppercase">Age / Gender</Label>
+                <p className="font-semibold text-slate-900 mt-1">
+                  {patient.age} years / {patient.gender}
+                </p>
+              </div>
+              <div>
+                <Label className="text-xs font-medium text-slate-500 uppercase">Phone</Label>
+                <p className="font-semibold text-slate-900 mt-1">
+                  {patient.phone_number || "N/A"}
+                </p>
+              </div>
+              <div>
+                <Label className="text-xs font-medium text-slate-500 uppercase">Token ID</Label>
+                <p className="font-semibold text-slate-900 mt-1 font-mono">
+                  {patient.token_id || `#${patient.id}`}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Health Score */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Activity className="h-4 w-4 text-slate-700" />
+              <h2 className="text-base font-bold text-slate-900 uppercase tracking-wide">
+                Health Assessment
+              </h2>
+            </div>
+            <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200">
+              <div>
+                <div className="flex items-baseline gap-2">
+                  <span className={`text-3xl font-bold ${risk.color}`}>
+                    {healthScore.score}
+                  </span>
+                  <span className="text-base text-slate-500">/100</span>
+                </div>
+                <p className="text-sm text-slate-600 mt-1">Health Score</p>
+              </div>
+              <div className={`px-3 py-1.5 rounded ${risk.bg}`}>
+                <p className={`text-sm font-semibold ${risk.color}`}>
+                  {risk.label}
+                </p>
+              </div>
             </div>
             {healthScore.issues.length > 0 && (
-              <div className="border-t pt-4">
-                <p className="text-sm font-medium text-slate-700 mb-2">
-                  Health Concerns:
-                </p>
-                <div className="flex flex-wrap gap-2">
+              <div className="mt-3">
+                <p className="text-xs font-medium text-slate-700 mb-1.5">Identified Concerns:</p>
+                <div className="flex flex-wrap gap-1.5">
                   {healthScore.issues.map((issue, idx) => (
-                    <Badge
+                    <span
                       key={idx}
-                      variant="outline"
-                      className="bg-orange-50 text-orange-700 border-orange-300"
+                      className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-50 text-orange-800 border border-orange-200"
                     >
                       <AlertTriangle className="h-3 w-3 mr-1" />
                       {issue}
-                    </Badge>
+                    </span>
                   ))}
                 </div>
               </div>
             )}
           </div>
-        </div>
 
-        {/* Vital Signs */}
-        <div className="mb-8">
-          <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-            <Heart className="h-5 w-5" />
-            Vital Signs
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-slate-50 p-4 rounded-lg text-center">
-              <Label className="text-slate-500 text-xs">Blood Pressure</Label>
-              <p
-                className={`text-2xl font-bold mt-1 ${
-                  patient.blood_pressure_status?.includes("Crisis")
-                    ? "text-red-600"
-                    : patient.blood_pressure_status?.includes("Stage")
-                      ? "text-orange-600"
-                      : "text-green-600"
-                }`}
-              >
-                {patient.systolic_bp && patient.diastolic_bp
-                  ? `${patient.systolic_bp}/${patient.diastolic_bp}`
-                  : "N/A"}
-              </p>
-              <p className="text-xs text-slate-500">mmHg</p>
-              <Badge
-                variant={
-                  patient.blood_pressure_status?.includes("Crisis")
-                    ? "destructive"
-                    : patient.blood_pressure_status?.includes("Stage")
-                      ? "outline"
-                      : "default"
-                }
-                className="mt-1 text-xs"
-              >
-                {patient.blood_pressure_status || "Unknown"}
-              </Badge>
+          {/* Vital Signs */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Heart className="h-4 w-4 text-slate-700" />
+              <h2 className="text-base font-bold text-slate-900 uppercase tracking-wide">
+                Vital Signs & Measurements
+              </h2>
             </div>
+            <table className="w-full border-collapse border border-slate-300">
+              <thead>
+                <tr className="bg-slate-100">
+                  <th className="border border-slate-300 px-3 py-2 text-left text-xs font-semibold text-slate-700 uppercase">
+                    Measurement
+                  </th>
+                  <th className="border border-slate-300 px-3 py-2 text-center text-xs font-semibold text-slate-700 uppercase">
+                    Result
+                  </th>
+                  <th className="border border-slate-300 px-3 py-2 text-center text-xs font-semibold text-slate-700 uppercase">
+                    Status
+                  </th>
+                  <th className="border border-slate-300 px-3 py-2 text-right text-xs font-semibold text-slate-700 uppercase">
+                    Reference Range
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="text-sm">
+                <tr>
+                  <td className="border border-slate-300 px-3 py-2.5">
+                    <p className="font-medium text-slate-900">Blood Pressure</p>
+                    <p className="text-xs text-slate-500">Systolic / Diastolic</p>
+                  </td>
+                  <td className="border border-slate-300 px-3 py-2.5 text-center">
+                    <span className="font-bold text-slate-900">
+                      {patient.systolic_bp && patient.diastolic_bp
+                        ? `${patient.systolic_bp}/${patient.diastolic_bp}`
+                        : "N/A"}
+                    </span>
+                  </td>
+                  <td className="border border-slate-300 px-3 py-2.5 text-center">
+                    {getStatusBadge(patient.blood_pressure_status)}
+                  </td>
+                  <td className="border border-slate-300 px-3 py-2.5 text-right text-xs text-slate-600">
+                    {VITAL_RANGES.blood_pressure.normal} <span className="text-slate-400">{VITAL_RANGES.blood_pressure.unit}</span>
+                  </td>
+                </tr>
+                <tr className="bg-slate-50">
+                  <td className="border border-slate-300 px-3 py-2.5">
+                    <p className="font-medium text-slate-900">Glucose Level</p>
+                    <p className="text-xs text-slate-500">Fasting blood sugar</p>
+                  </td>
+                  <td className="border border-slate-300 px-3 py-2.5 text-center">
+                    <span className="font-bold text-slate-900">
+                      {patient.glucose_level || "N/A"}
+                    </span>
+                  </td>
+                  <td className="border border-slate-300 px-3 py-2.5 text-center">
+                    {getStatusBadge(patient.glucose_status)}
+                  </td>
+                  <td className="border border-slate-300 px-3 py-2.5 text-right text-xs text-slate-600">
+                    {VITAL_RANGES.glucose.normal} <span className="text-slate-400">{VITAL_RANGES.glucose.unit}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-300 px-3 py-2.5">
+                    <p className="font-medium text-slate-900">Body Mass Index</p>
+                    <p className="text-xs text-slate-500">BMI</p>
+                  </td>
+                  <td className="border border-slate-300 px-3 py-2.5 text-center">
+                    <span className="font-bold text-slate-900">
+                      {patient.bmi || "N/A"}
+                    </span>
+                  </td>
+                  <td className="border border-slate-300 px-3 py-2.5 text-center">
+                    {getStatusBadge(patient.bmi_category)}
+                  </td>
+                  <td className="border border-slate-300 px-3 py-2.5 text-right text-xs text-slate-600">
+                    {VITAL_RANGES.bmi.normal} <span className="text-slate-400">{VITAL_RANGES.bmi.unit}</span>
+                  </td>
+                </tr>
+                <tr className="bg-slate-50">
+                  <td className="border border-slate-300 px-3 py-2.5">
+                    <p className="font-medium text-slate-900">Heart Rate</p>
+                    <p className="text-xs text-slate-500">Pulse rate</p>
+                  </td>
+                  <td className="border border-slate-300 px-3 py-2.5 text-center">
+                    <span className="font-bold text-slate-900">
+                      {patient.heart_rate || "N/A"}
+                    </span>
+                  </td>
+                  <td className="border border-slate-300 px-3 py-2.5 text-center">
+                    {getStatusBadge(patient.heart_rate_status)}
+                  </td>
+                  <td className="border border-slate-300 px-3 py-2.5 text-right text-xs text-slate-600">
+                    {VITAL_RANGES.heart_rate.normal} <span className="text-slate-400">{VITAL_RANGES.heart_rate.unit}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-            <div className="bg-slate-50 p-4 rounded-lg text-center">
-              <Label className="text-slate-500 text-xs">Glucose Level</Label>
-              <p
-                className={`text-2xl font-bold mt-1 ${
-                  patient.glucose_status?.includes("Diabetes")
-                    ? "text-orange-600"
-                    : "text-green-600"
-                }`}
-              >
-                {patient.glucose_level || "N/A"}
-              </p>
-              <p className="text-xs text-slate-500">mg/dL</p>
-              <Badge variant="secondary" className="mt-1 text-xs">
-                {patient.glucose_status || "Unknown"}
-              </Badge>
+          {/* Clinical Recommendations */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Stethoscope className="h-4 w-4 text-slate-700" />
+              <h2 className="text-base font-bold text-slate-900 uppercase tracking-wide">
+                Clinical Recommendations
+              </h2>
             </div>
-
-            <div className="bg-slate-50 p-4 rounded-lg text-center">
-              <Label className="text-slate-500 text-xs">BMI</Label>
-              <p className="text-2xl font-bold mt-1 text-slate-900">
-                {patient.bmi || "N/A"}
-              </p>
-              <p className="text-xs text-slate-500">kg/m²</p>
-              <Badge variant="secondary" className="mt-1 text-xs">
-                {patient.bmi_category || "Unknown"}
-              </Badge>
-            </div>
-
-            <div className="bg-slate-50 p-4 rounded-lg text-center">
-              <Label className="text-slate-500 text-xs">Heart Rate</Label>
-              <p className="text-2xl font-bold mt-1 text-slate-900">
-                {patient.heart_rate || "N/A"}
-              </p>
-              <p className="text-xs text-slate-500">BPM</p>
+            <div className="border border-slate-300 p-3 bg-white">
+              {patient.doctor_advice ? (
+                <div className="whitespace-pre-wrap text-sm text-slate-800 leading-relaxed">
+                  {patient.doctor_advice}
+                </div>
+              ) : (
+                <p className="text-sm text-slate-500 italic">
+                  No recommendations provided at this time.
+                </p>
+              )}
             </div>
           </div>
-        </div>
 
-        {/* Medical History */}
-        {(patient.known_conditions || patient.current_medications) && (
-          <div className="mb-8">
-            <h2 className="text-lg font-bold text-slate-900 mb-4">
-              Medical History
-            </h2>
-            <div className="bg-slate-50 p-4 rounded-lg space-y-3">
-              {patient.known_conditions && (
+          {/* Specialist Follow-up */}
+          {patient.requires_specialist_followup && (
+            <div className="mb-6">
+              <div className="flex items-start gap-2 p-3 bg-orange-50 border border-orange-200">
+                <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5" />
                 <div>
-                  <Label className="text-slate-500 text-xs">
-                    Known Conditions
-                  </Label>
-                  <p className="text-sm">{patient.known_conditions}</p>
+                  <p className="font-semibold text-orange-900 text-sm">
+                    Specialist Referral Required
+                  </p>
+                  <p className="text-xs text-orange-700 mt-1">
+                    This patient requires follow-up with a specialist. Please ensure the patient is referred to the appropriate specialty department.
+                  </p>
                 </div>
-              )}
-              {patient.current_medications && (
-                <div>
-                  <Label className="text-slate-500 text-xs">
-                    Current Medications
-                  </Label>
-                  <p className="text-sm">{patient.current_medications}</p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Doctor's Advice */}
-        <div className="mb-8">
-          <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-            <Stethoscope className="h-5 w-5" />
-            Doctor's Recommendations
-          </h2>
-          <div className="border-2 border-slate-800 p-6 rounded-lg min-h-[150px]">
-            {patient.doctor_advice ? (
-              <div className="whitespace-pre-wrap text-slate-800">
-                {patient.doctor_advice}
               </div>
-            ) : (
-              <p className="text-slate-400 italic">
-                No recommendations provided.
-              </p>
-            )}
-          </div>
-        </div>
+            </div>
+          )}
 
-        {/* Specialist Follow-up */}
-        {patient.requires_specialist_followup && (
-          <div className="mb-8">
-            <div className="bg-orange-50 border border-orange-300 p-4 rounded-lg flex items-center gap-3">
-              <AlertTriangle className="h-6 w-6 text-orange-600" />
+          {/* Consultation Status */}
+          {patient.has_consultation && (
+            <div className="mb-6">
+              <div className="flex items-center gap-2 text-sm text-slate-700 bg-green-50 border border-green-200 p-2.5">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <span>
+                  Consultation completed on{" "}
+                  {new Date(patient.consultation_date).toLocaleString()}
+                  {patient.doctor_info?.name && (
+                    <span className="font-medium">
+                      {" "}by {patient.doctor_info.name}
+                    </span>
+                  )}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Medical History */}
+          {(patient.known_conditions || patient.current_medications) && (
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Shield className="h-4 w-4 text-slate-700" />
+                <h2 className="text-base font-bold text-slate-900 uppercase tracking-wide">
+                  Medical History
+                </h2>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                {patient.known_conditions && (
+                  <div>
+                    <Label className="text-xs font-medium text-slate-500 uppercase">Known Conditions</Label>
+                    <p className="text-sm text-slate-900 mt-1">{patient.known_conditions}</p>
+                  </div>
+                )}
+                {patient.current_medications && (
+                  <div>
+                    <Label className="text-xs font-medium text-slate-500 uppercase">Current Medications</Label>
+                    <p className="text-sm text-slate-900 mt-1">{patient.current_medications}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Signature & Footer */}
+          <div className="border-t-2 border-slate-300 pt-4 mt-6">
+            <div className="grid grid-cols-2 gap-8 mb-4">
               <div>
-                <p className="font-semibold text-orange-800">
-                  Specialist Follow-up Required
-                </p>
-                <p className="text-sm text-orange-700">
-                  This patient has been referred for specialist care.
+                <p className="text-sm font-medium text-slate-700 mb-8">Healthcare Provider Signature</p>
+                <div className="border-b border-slate-400 w-40 mb-2"></div>
+                <p className="text-xs text-slate-500">Authorized Medical Personnel</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-700 mb-8">Date & Time</p>
+                <div className="border-b border-slate-400 w-40 mb-2"></div>
+                <p className="text-xs text-slate-500">
+                  {new Date().toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
                 </p>
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Consultation Info */}
-        {patient.has_consultation && (
-          <div className="mb-8">
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <span>
-                Consulted on{" "}
-                {new Date(patient.consultation_date).toLocaleString()}
-              </span>
-              {patient.doctor_info?.name && (
-                <span>by {patient.doctor_info.name}</span>
-              )}
+            <div className="text-center border-t border-slate-200 pt-3">
+              <p className="text-xs text-slate-600 font-medium">
+                This report is computer-generated and does not constitute a formal medical diagnosis.
+              </p>
+              <p className="text-xs text-slate-500 mt-1">
+                Please consult a qualified healthcare professional for proper medical advice.
+              </p>
+              <p className="text-xs text-slate-400 mt-1">
+                HealthTrace - Community Health Screening System
+              </p>
             </div>
-          </div>
-        )}
-
-        {/* Footer */}
-        <div className="border-t-2 border-slate-800 pt-6 mt-8">
-          <div className="text-center text-sm text-slate-500">
-            <p>
-              This report is for informational purposes only and does not
-              constitute a formal medical diagnosis.
-            </p>
-            <p className="mt-1">
-              Please consult a healthcare professional for proper medical
-              advice.
-            </p>
           </div>
         </div>
       </div>
 
-      {/* Print Styles */}
       <style>{`
         @media print {
+          @page {
+            size: A4;
+            margin: 0.6cm;
+          }
           body {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+            background: white !important;
           }
-          .print\\:hidden {
+          .no-print {
             display: none !important;
           }
-          .print\\:p-0 {
-            padding: 0 !important;
+          .print\\:shadow-none {
+            box-shadow: none !important;
           }
         }
       `}</style>

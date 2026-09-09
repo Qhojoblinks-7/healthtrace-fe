@@ -12,14 +12,18 @@ import {
   Search,
   Bell,
   Settings,
+  Shield,
   ChevronLeft,
   ChevronRight,
+  Sun,
+  Moon,
 } from "lucide-react";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { NotificationDropdown } from "./NotificationDropdown";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { useUIStore } from "@/store";
 
 const navItems = [
   {
@@ -45,14 +49,13 @@ const navItems = [
 ];
 
 export function DoctorLayout() {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const sidebarCollapsed = useUIStore((state) => state.sidebarOpen);
+  const setSidebarCollapsed = useUIStore((state) => state.setSidebarOpen);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Get search query directly from URL - this stays in sync with the URL
   const searchQuery = searchParams.get("search") || "";
 
-  // Handle search on input change (no need to press Enter)
   const handleSearchChange = (e) => {
     const query = e.target.value;
 
@@ -64,9 +67,9 @@ export function DoctorLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F5F7FA] to-[#E4EBF5]">
-      {/* Fixed Header - spans full width */}
-      <header className="fixed top-0 left-0 right-0 z-30 bg-gradient-to-br from-white to-[#E8EDF2] shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)] h-16">
+    <div className="min-h-screen bg-background">
+      {/* Fixed Header */}
+      <header className="fixed top-0 left-0 right-0 z-30 bg-card shadow-neu-outer h-16">
         <div className="flex items-center justify-center h-full px-4">
           {/* Search Bar - Center */}
           <div className="flex-1 max-w-xl">
@@ -77,32 +80,34 @@ export function DoctorLayout() {
                 placeholder="Search patients by name or phone number..."
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className="w-full h-10 pl-10 pr-4 rounded-xl border-0 bg-gradient-to-br from-[#E8EDF2] to-white shadow-[inset_2px_2px_4px_rgba(176,190,197,0.3),inset_-2px_-2px_4px_rgba(255,255,255,0.5)] focus:shadow-[inset_2px_2px_4px_rgba(176,190,197,0.3),inset_-2px_-2px_4px_rgba(255,255,255,0.5),0_0_0_2px_rgba(76,175,80,0.3)] focus:outline-none text-sm"
+                className="neu-input w-full h-10 pl-10 pr-4 text-sm"
               />
             </div>
           </div>
 
-          {/* Notifications - Right side */}
-          <div className="ml-4">
+          {/* Right side actions */}
+          <div className="ml-4 flex items-center gap-2">
+            <ThemeToggle />
             <NotificationDropdown sidebarCollapsed={false} />
           </div>
         </div>
       </header>
 
-      {/* Sidebar - Fixed on LEFT side */}
+      {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-30 h-[calc(100vh-4rem)] bg-gradient-to-br from-[#E8EDF2] to-white text-card-foreground transition-all duration-300 shadow-[8px_8px_16px_rgba(176,190,197,0.5),-8px_-8px_16px_rgba(255,255,255,0.8)] h-screen",
+          "fixed top-0 left-0 z-30 bg-card shadow-neu-outer text-card-foreground transition-all duration-300",
+          "h-screen",
           sidebarCollapsed ? "w-20" : "w-64",
         )}
       >
-        {/* Toggle Button on Right Border */}
+        {/* Toggle Button */}
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
           className={cn(
-            "absolute top-1/2 -translate-y-1/2 h-8 w-8 bg-gradient-to-br from-white to-[#E8EDF2] shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)] hover:shadow-[8px_8px_16px_rgba(176,190,197,0.5),-8px_-8px_16px_rgba(255,255,255,0.8)]",
+            "absolute top-1/2 -translate-y-1/2 h-8 w-8 bg-card shadow-neu-outer-sm hover:shadow-neu-outer",
             sidebarCollapsed ? "-right-4" : "-right-4",
           )}
         >
@@ -113,7 +118,7 @@ export function DoctorLayout() {
           )}
         </Button>
 
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full pt-16">
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-2">
             {navItems.map((item) => (
@@ -124,8 +129,8 @@ export function DoctorLayout() {
                   cn(
                     "flex items-center gap-3 px-3 py-3 rounded-xl transition-all",
                     isActive
-                      ? "bg-gradient-to-br from-white to-[#E8EDF2] text-primary shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)]"
-                      : "text-muted-foreground hover:bg-gradient-to-br hover:from-white hover:to-[#E8EDF2] hover:text-card-foreground hover:shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)]",
+                      ? "bg-card shadow-neu-outer-sm text-primary"
+                      : "text-muted-foreground hover:bg-card hover:text-foreground hover:shadow-neu-outer-sm",
                     sidebarCollapsed && "justify-center",
                   )
                 }
@@ -136,7 +141,7 @@ export function DoctorLayout() {
             ))}
           </nav>
 
-          {/* Settings & Notifications */}
+          {/* Settings */}
           <div className="p-4 border-t border-border space-y-2">
             {!sidebarCollapsed && (
               <p className="text-xs text-muted-foreground uppercase font-medium px-3">
@@ -150,14 +155,30 @@ export function DoctorLayout() {
                 cn(
                   "flex items-center gap-3 px-3 py-3 rounded-xl transition-all",
                   isActive
-                    ? "bg-gradient-to-br from-white to-[#E8EDF2] text-primary shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)]"
-                    : "text-muted-foreground hover:bg-gradient-to-br hover:from-white hover:to-[#E8EDF2] hover:text-card-foreground hover:shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)]",
+                    ? "bg-card shadow-neu-outer-sm text-primary"
+                    : "text-muted-foreground hover:bg-card hover:text-foreground hover:shadow-neu-outer-sm",
                   sidebarCollapsed && "justify-center",
                 )
               }
             >
               <Settings className="h-5 w-5 shrink-0" />
               {!sidebarCollapsed && <span>Settings</span>}
+            </NavLink>
+
+            <NavLink
+              to="/admin/roles"
+              className={({ isActive }) =>
+                cn(
+                  "flex items-center gap-3 px-3 py-3 rounded-xl transition-all",
+                  isActive
+                    ? "bg-card shadow-neu-outer-sm text-primary"
+                    : "text-muted-foreground hover:bg-card hover:text-foreground hover:shadow-neu-outer-sm",
+                  sidebarCollapsed && "justify-center",
+                )
+              }
+            >
+              <Shield className="h-5 w-5 shrink-0" />
+              {!sidebarCollapsed && <span>Admin</span>}
             </NavLink>
           </div>
 
@@ -169,7 +190,7 @@ export function DoctorLayout() {
                 sidebarCollapsed && "justify-center",
               )}
             >
-              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-primary-600 flex items-center justify-center font-bold shrink-0 shadow-[4px_4px_8px_rgba(176,190,197,0.4),-4px_-4px_8px_rgba(255,255,255,0.7)]">
+              <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center font-bold shrink-0 shadow-neu-outer-sm text-primary-foreground">
                 DR
               </div>
               {!sidebarCollapsed && (
@@ -183,7 +204,7 @@ export function DoctorLayout() {
         </div>
       </aside>
 
-      {/* Main Content - on the RIGHT side */}
+      {/* Main Content */}
       <main
         className={cn(
           "relative z-10 pt-16 min-h-screen transition-all duration-300",

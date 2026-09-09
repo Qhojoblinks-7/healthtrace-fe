@@ -1,0 +1,63 @@
+export const FIELD_TYPES = {
+  TEXT: "text",
+  NUMBER: "number",
+  EMAIL: "email",
+  PHONE: "phone",
+  TEXTAREA: "textarea",
+  SELECT: "select",
+  MULTISELECT: "multiselect",
+  CHECKBOX: "checkbox",
+  DATE: "date",
+  TIME: "time",
+  DATETIME: "datetime",
+  BOOLEAN: "boolean",
+  RANGE: "range",
+  PASSWORD: "password",
+};
+
+export const FIELD_TYPE_LABELS = {
+  [FIELD_TYPES.TEXT]: "Text",
+  [FIELD_TYPES.NUMBER]: "Number",
+  [FIELD_TYPES.EMAIL]: "Email",
+  [FIELD_TYPES.PHONE]: "Phone",
+  [FIELD_TYPES.TEXTAREA]: "Text Area",
+  [FIELD_TYPES.SELECT]: "Dropdown",
+  [FIELD_TYPES.MULTISELECT]: "Multi-Select",
+  [FIELD_TYPES.CHECKBOX]: "Checkbox",
+  [FIELD_TYPES.DATE]: "Date",
+  [FIELD_TYPES.TIME]: "Time",
+  [FIELD_TYPES.DATETIME]: "Date & Time",
+  [FIELD_TYPES.BOOLEAN]: "Boolean",
+  [FIELD_TYPES.RANGE]: "Range",
+  [FIELD_TYPES.PASSWORD]: "Password",
+};
+
+export const FIELD_TYPE_ICONS = {
+  [FIELD_TYPES.TEXT]: "Type",
+  [FIELD_TYPES.NUMBER]: "Hash",
+  [FIELD_TYPES.EMAIL]: "Mail",
+  [FIELD_TYPES.PHONE]: "Phone",
+  [FIELD_TYPES.TEXTAREA]: "AlignLeft",
+  [FIELD_TYPES.SELECT]: "ChevronDown",
+  [FIELD_TYPES.MULTISELECT]: "List",
+  [FIELD_TYPES.CHECKBOX]: "CheckSquare",
+  [FIELD_TYPES.DATE]: "Calendar",
+  [FIELD_TYPES.TIME]: "Clock",
+  [FIELD_TYPES.DATETIME]: "CalendarClock",
+  [FIELD_TYPES.BOOLEAN]: "ToggleLeft",
+  [FIELD_TYPES.RANGE]: "SlidersHorizontal",
+  [FIELD_TYPES.PASSWORD]: "Lock",
+};
+
+export const DEFAULT_FIELD_SCHEMA = {
+  name: "",
+  label: "",
+  type: FIELD_TYPES.TEXT,
+  required: false,
+  placeholder: "",
+  helpText: "",
+  options: [],
+  min: null,
+  max: null,
+  step: null,
+};

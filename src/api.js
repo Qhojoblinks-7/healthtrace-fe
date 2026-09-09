@@ -1,11 +1,7 @@
 import axios from "axios";
 
-// API base URL - change this to your Render URL when deploying
-// For local development, use http://localhost:8000
-// For production, use your Render deployment URL
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
-// Create axios instance with default configuration
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,
   headers: {
@@ -14,7 +10,6 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Request interceptor for adding auth tokens
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("authToken");
@@ -23,17 +18,13 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  },
+  (error) => Promise.reject(error),
 );
 
-// Response interceptor for handling errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Handle unauthorized - redirect to login or clear token
       localStorage.removeItem("authToken");
       window.location.href = "/login";
     }
@@ -41,75 +32,73 @@ api.interceptors.response.use(
   },
 );
 
-// Screening API endpoints
 export const screeningAPI = {
-  // Get all screenings with optional pagination
-  getAll: (params = {}) => api.get("/screenings/", { params }),
+  getAll: (params = {}) => api.get("/patients/", { params }),
 
-  // Get notifications
-  getNotifications: () => api.get("/screenings/notifications/"),
-
-  // Mark notification as read
-  markNotificationRead: (patientId) =>
-    api.post("/screenings/mark_notification_read/", { patient_id: patientId }),
-
-  // Get screening by ID
-  getById: (id) => api.get(`/screenings/${id}/`),
-
-  // Create new screening
-  create: (data) => api.post("/screenings/", data),
-
-  // Update screening
-  update: (id, data) => api.put(`/screenings/${id}/`, data),
-
-  // Partial update screening
-  patch: (id, data) => api.patch(`/screenings/${id}/`, data),
-
-  // Doctor consultation
-  consult: (id, data) => api.post(`/screenings/${id}/consult/`, data),
-
-  // Delete screening
-  delete: (id) => api.delete(`/screenings/${id}/`),
-
-  // Get screenings by patient
-  getByPatient: (patientId) => api.get(`/screenings/?patient=${patientId}`),
-
-  // Get screening statistics
-  getStats: () => api.get("/screenings/summary/"),
-};
-
-// Patient API endpoints
-export const patientAPI = {
-  // Get all patients
-  getAll: () => api.get("/patients/"),
-
-  // Get patient by ID
   getById: (id) => api.get(`/patients/${id}/`),
 
-  // Create new patient
   create: (data) => api.post("/patients/", data),
 
-  // Update patient
-  update: (id, data) => api.put(`/patients/${id}/`),
+  update: (id, data) => api.put(`/patients/${id}/`, data),
 
-  // Delete patient
+  patch: (id, data) => api.patch(`/patients/${id}/`, data),
+
+  delete: (id) => api.delete(`/patients/${id}/`),
+
+  consult: (id, data) => api.post(`/patients/${id}/discharge/`, data),
+
+  getNotifications: () =>
+    api.get("/patients/", { params: { is_completed: false } }).then(
+      (res) => ({
+        data: {
+          notifications: (res.data.results || res.data).map((p) => ({
+            id: p.id,
+            patient_id: p.id,
+            title: p.patient_name,
+            message: `Token ${p.token_id} - ${p.is_urgent ? "URGENT" : "Active"}`,
+            type: p.is_urgent ? "critical" : "info",
+            timestamp: p.updated_at,
+            read: false,
+          })),
+          unread_count: (res.data.results || res.data).filter((p) => !p.is_completed).length,
+        },
+      }),
+    ),
+
+  markNotificationRead: (patientId) =>
+    api.post(`/patients/${patientId}/mark-read/`).then((res) => ({
+      data: { unread_count: 0 },
+    })),
+
+  getByPatient: (patientId) =>
+    api.get(`/patients/${patientId}/`),
+
+  getStats: () => api.get("/patients/analytics/"),
+};
+
+export const patientAPI = {
+  getAll: () => api.get("/patients/"),
+
+  getById: (id) => api.get(`/patients/${id}/`),
+
+  create: (data) => api.post("/patients/", data),
+
+  update: (id, data) => api.put(`/patients/${id}/`, data),
+
   delete: (id) => api.delete(`/patients/${id}/`),
 };
 
-// Auth API endpoints
 export const authAPI = {
-  // Login
   login: (credentials) => api.post("/auth/login/", credentials),
 
-  // Logout
   logout: () => api.post("/auth/logout/"),
 
-  // Get current user
   me: () => api.get("/auth/me/"),
 
-  // Refresh token
   refresh: (refreshToken) =>
     api.post("/auth/refresh/", { refresh: refreshToken }),
 };
 
 export default api;
+
+// HealthTrace API client - endpoints mapped to backend PatientWorkflow routes

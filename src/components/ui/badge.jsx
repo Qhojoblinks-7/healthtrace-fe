@@ -8,11 +8,11 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-br from-white to-[#E8EDF2] text-primary shadow-[2px_2px_4px_rgba(176,190,197,0.4),-2px_-2px_4px_rgba(255,255,255,0.7)]",
-        secondary: "bg-gradient-to-br from-white to-[#E8EDF2] text-secondary shadow-[2px_2px_4px_rgba(176,190,197,0.4),-2px_-2px_4px_rgba(255,255,255,0.7)]",
-        destructive: "bg-gradient-to-br from-white to-[#E8EDF2] text-destructive shadow-[2px_2px_4px_rgba(176,190,197,0.4),-2px_-2px_4px_rgba(255,255,255,0.7)]",
-        outline: "bg-gradient-to-br from-white to-[#E8EDF2] text-foreground shadow-[2px_2px_4px_rgba(176,190,197,0.4),-2px_-2px_4px_rgba(255,255,255,0.7)]",
-        ghost: "hover:bg-muted hover:text-muted-foreground",
+        default: "bg-gradient-to-br from-white to-[#E8EDF2] dark:from-background dark:to-card text-primary shadow-[2px_2px_4px_rgba(176,190,197,0.4),-2px_-2px_4px_rgba(255,255,255,0.7)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.3),-2px_-2px_4px_rgba(255,255,255,0.05)]",
+        secondary: "bg-gradient-to-br from-white to-[#E8EDF2] dark:from-background dark:to-card text-secondary shadow-[2px_2px_4px_rgba(176,190,197,0.4),-2px_-2px_4px_rgba(255,255,255,0.7)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.3),-2px_-2px_4px_rgba(255,255,255,0.05)]",
+        destructive: "bg-gradient-to-br from-white to-[#E8EDF2] dark:from-background dark:to-card text-destructive shadow-[2px_2px_4px_rgba(176,190,197,0.4),-2px_-2px_4px_rgba(255,255,255,0.7)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.3),-2px_-2px_4px_rgba(255,255,255,0.05)]",
+        outline: "bg-gradient-to-br from-white to-[#E8EDF2] dark:from-background dark:to-card text-foreground shadow-[2px_2px_4px_rgba(176,190,197,0.4),-2px_-2px_4px_rgba(255,255,255,0.7)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.3),-2px_-2px_4px_rgba(255,255,255,0.05)]",
+        ghost: "hover:bg-muted hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
     },

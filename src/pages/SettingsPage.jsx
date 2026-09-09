@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -31,56 +30,31 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { useSettingsStore } from "@/store";
+import { useTheme } from "@/hooks/use-theme";
 
 export function SettingsPage() {
   const queryClient = useQueryClient();
+  const {
+    lastCacheClear,
+    setLastCacheClear,
+    isExporting,
+    setIsExporting,
+    isClearingCache,
+    setIsClearingCache,
+    profile,
+    setProfile,
+    notifications,
+    setNotifications,
+    display,
+    setDisplay,
+    system,
+    setSystem,
+    security,
+    setSecurity,
+  } = useSettingsStore();
 
-  // State for tracking last cache clear
-  const [lastCacheClear, setLastCacheClear] = useState(null);
-  const [isExporting, setIsExporting] = useState(false);
-  const [isClearingCache, setIsClearingCache] = useState(false);
-  // Profile Settings
-  const [profile, setProfile] = useState({
-    firstName: "Dr. Smith",
-    lastName: "",
-    email: "dr.smith@healthtrace.com",
-    phone: "+1 (555) 123-4567",
-    department: "General Practice",
-    specialization: "Primary Care",
-  });
-
-  // Notification Settings
-  const [notifications, setNotifications] = useState({
-    emailNotifications: true,
-    smsNotifications: true,
-    criticalAlerts: true,
-    dailySummary: true,
-    newPatientAlerts: true,
-    consultationReminders: true,
-  });
-
-  // Display Settings
-  const [display, setDisplay] = useState({
-    darkMode: false,
-    compactView: false,
-    showAnimations: true,
-    sidebarCollapsed: false,
-  });
-
-  // System Settings
-  const [system, setSystem] = useState({
-    autoRefresh: true,
-    refreshInterval: 30,
-    defaultPageSize: 20,
-    enableAnalytics: true,
-  });
-
-  // Security Settings
-  const [security, setSecurity] = useState({
-    twoFactorAuth: false,
-    sessionTimeout: 30,
-    auditLogging: true,
-  });
+  const { setTheme } = useTheme();
 
   const handleProfileSave = () => {
     toast.success("Profile updated successfully", {
@@ -251,11 +225,11 @@ export function SettingsPage() {
     <div className="space-y-6 max-w-5xl">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
+        <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
           <Settings className="h-8 w-8 text-blue-600" />
           Settings
         </h1>
-        <p className="text-slate-600 mt-1">
+        <p className="text-muted-foreground mt-1">
           Manage your account preferences and application settings
         </p>
       </div>
@@ -298,7 +272,7 @@ export function SettingsPage() {
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
@@ -313,7 +287,7 @@ export function SettingsPage() {
             <div className="space-y-2">
               <Label htmlFor="phone">Phone</Label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="phone"
                   type="tel"
@@ -330,7 +304,7 @@ export function SettingsPage() {
             <div className="space-y-2">
               <Label htmlFor="department">Department</Label>
               <div className="relative">
-                <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="department"
                   className="pl-10"
@@ -374,14 +348,14 @@ export function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
-            <h4 className="text-sm font-medium text-slate-900">
+            <h4 className="text-sm font-medium text-foreground">
               Notification Channels
             </h4>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Email Notifications</Label>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted-foreground">
                     Receive notifications via email
                   </p>
                 </div>
@@ -398,7 +372,7 @@ export function SettingsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>SMS Notifications</Label>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted-foreground">
                     Receive notifications via SMS
                   </p>
                 </div>
@@ -415,12 +389,12 @@ export function SettingsPage() {
             </div>
           </div>
           <div className="space-y-4">
-            <h4 className="text-sm font-medium text-slate-900">Alert Types</h4>
+            <h4 className="text-sm font-medium text-foreground">Alert Types</h4>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Critical Alerts</Label>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted-foreground">
                     Get immediate alerts for critical patient cases
                   </p>
                 </div>
@@ -437,7 +411,7 @@ export function SettingsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>New Patient Alerts</Label>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted-foreground">
                     Notify when new patients are added
                   </p>
                 </div>
@@ -454,7 +428,7 @@ export function SettingsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Daily Summary</Label>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted-foreground">
                     Receive a daily summary of activities
                   </p>
                 </div>
@@ -471,7 +445,7 @@ export function SettingsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Consultation Reminders</Label>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted-foreground">
                     Get reminders for scheduled consultations
                   </p>
                 </div>
@@ -509,30 +483,31 @@ export function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
-            <h4 className="text-sm font-medium text-slate-900">Appearance</h4>
+            <h4 className="text-sm font-medium text-foreground">Appearance</h4>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Dark Mode</Label>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted-foreground">
                     Use dark theme for the interface
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Sun className="h-4 w-4 text-slate-400" />
+                  <Sun className="h-4 w-4 text-muted-foreground" />
                   <Switch
                     checked={display.darkMode}
-                    onCheckedChange={(checked) =>
-                      setDisplay({ ...display, darkMode: checked })
-                    }
+                    onCheckedChange={(checked) => {
+                      setTheme(checked ? "dark" : "light");
+                      setDisplay({ ...display, darkMode: checked });
+                    }}
                   />
-                  <Moon className="h-4 w-4 text-slate-400" />
+                  <Moon className="h-4 w-4 text-muted-foreground" />
                 </div>
               </div>
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Compact View</Label>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted-foreground">
                     Show more content with reduced spacing
                   </p>
                 </div>
@@ -546,7 +521,7 @@ export function SettingsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Show Animations</Label>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted-foreground">
                     Enable animations and transitions
                   </p>
                 </div>
@@ -585,7 +560,7 @@ export function SettingsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Auto Refresh</Label>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted-foreground">
                     Automatically refresh patient data
                   </p>
                 </div>
@@ -638,7 +613,7 @@ export function SettingsPage() {
               <div className="flex items-center justify-between h-full">
                 <div className="space-y-0.5">
                   <Label>Enable Analytics</Label>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted-foreground">
                     Collect usage analytics
                   </p>
                 </div>
@@ -676,7 +651,7 @@ export function SettingsPage() {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label>Two-Factor Authentication</Label>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                   Add an extra layer of security to your account
                 </p>
               </div>
@@ -690,7 +665,7 @@ export function SettingsPage() {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label>Audit Logging</Label>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                   Track all account activities and changes
                 </p>
               </div>
@@ -741,10 +716,10 @@ export function SettingsPage() {
         <CardContent className="space-y-6">
           <div className="space-y-4">
             <div>
-              <h4 className="text-sm font-medium text-slate-900 mb-3">
+              <h4 className="text-sm font-medium text-foreground mb-3">
                 Cache Management
               </h4>
-              <p className="text-sm text-slate-500 mb-3">
+              <p className="text-sm text-muted-foreground mb-3">
                 Clear cached data to free up storage and refresh application
                 data.
               </p>
@@ -766,10 +741,10 @@ export function SettingsPage() {
 
           <div className="space-y-4">
             <div>
-              <h4 className="text-sm font-medium text-slate-900 mb-3">
+              <h4 className="text-sm font-medium text-foreground mb-3">
                 Data Export
               </h4>
-              <p className="text-sm text-slate-500 mb-3">
+              <p className="text-sm text-muted-foreground mb-3">
                 Export all screening data as a CSV file for external analysis or
                 backup.
               </p>
@@ -790,7 +765,7 @@ export function SettingsPage() {
           </div>
 
           <div className="pt-4 border-t">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-muted-foreground">
               {lastCacheClear
                 ? `Last cache cleared: ${lastCacheClear.toLocaleString()}`
                 : "Cache has never been cleared"}

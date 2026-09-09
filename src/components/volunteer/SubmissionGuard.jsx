@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useScreeningStore, useSessionStore } from "@/store";
 import { screeningAPI } from "@/api";
+import { evaluateClinicalUrgency } from "@/lib/health-calculations";
 
 /**
  * SubmissionGuard - Form footer with TanStack Mutation
@@ -26,12 +27,29 @@ export function SubmissionGuard() {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [pendingSubmit, setPendingSubmit] = useState(false);
 
-  // Check for critical values
+  // Check for critical values using centralized clinical urgency evaluation
   const hasCriticalValues = () => {
-    const { systolic_bp, diastolic_bp, glucose_level } = screeningFormData;
-    if (systolic_bp > 180 || diastolic_bp > 120) return true;
-    if (glucose_level > 400) return true;
-    return false;
+    return evaluateClinicalUrgency(screeningFormData);
+  };
+
+  // Get detailed status for modal display
+  const getCriticalDetails = () => {
+    const details = [];
+    const systolic = screeningFormData.systolic_bp;
+    const diastolic = screeningFormData.diastolic_bp;
+    const glucose = screeningFormData.glucose_level;
+
+    if (systolic && parseFloat(systolic) >= 180) {
+      details.push(`Systolic BP: ${systolic} mmHg`);
+    }
+    if (diastolic && parseFloat(diastolic) >= 120) {
+      details.push(`Diastolic BP: ${diastolic} mmHg`);
+    }
+    if (glucose && parseFloat(glucose) >= 250) {
+      details.push(`Glucose: ${glucose} mg/dL`);
+    }
+
+    return details;
   };
 
   // TanStack Mutation for form submission
@@ -176,23 +194,13 @@ export function SubmissionGuard() {
                   The following values are critical:
                 </p>
 
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4 space-y-2">
-                  {screeningFormData.systolic_bp > 180 && (
-                    <p className="text-red-700 font-medium text-sm">
-                      ⚠️ Systolic BP: {screeningFormData.systolic_bp} mmHg
-                    </p>
-                  )}
-                  {screeningFormData.diastolic_bp > 120 && (
-                    <p className="text-red-700 font-medium text-sm">
-                      ⚠️ Diastolic BP: {screeningFormData.diastolic_bp} mmHg
-                    </p>
-                  )}
-                  {screeningFormData.glucose_level > 400 && (
-                    <p className="text-red-700 font-medium text-sm">
-                      ⚠️ Glucose: {screeningFormData.glucose_level} mg/dL
-                    </p>
-                  )}
-                </div>
+                <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3 sm:p-4 space-y-2">
+                {getCriticalDetails().map((detail, idx) => (
+                  <p key={idx} className="text-red-700 font-medium text-sm">
+                    ⚠️ {detail}
+                  </p>
+                ))}
+              </div>
 
                 <p className="text-sm font-medium">Submit anyway?</p>
               </div>

@@ -1,67 +1,70 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: "class",
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
-        // Royal Blue theme - primary medical/health aesthetic
         primary: {
-          DEFAULT: "#4169E1", // Royal Blue
-          50: "#EEF2FF",
-          100: "#E0E7FF",
-          200: "#C7D2FE",
-          300: "#A5B4FC",
-          400: "#818CF8",
-          500: "#6366F1",
-          600: "#4169E1", // Royal Blue
-          700: "#3730A3",
-          800: "#3730A3",
-          900: "#312E81",
-          950: "#1E1B4B",
-          foreground: "#FFFFFF",
+          DEFAULT: "var(--color-primary)",
+          foreground: "var(--color-primary-foreground)",
         },
         secondary: {
-          DEFAULT: "#10B981", // Medical green
-          50: "#ECFDF5",
-          100: "#D1FAE5",
-          200: "#A7F3D0",
-          300: "#6EE7B7",
-          400: "#34D399",
-          500: "#10B981",
-          600: "#059669",
-          700: "#047857",
-          800: "#065F46",
-          900: "#064E3B",
-          foreground: "#FFFFFF",
+          DEFAULT: "var(--color-secondary)",
+          foreground: "var(--color-secondary-foreground)",
         },
         destructive: {
-          DEFAULT: "#DC2626",
-          foreground: "#FFFFFF",
+          DEFAULT: "var(--color-destructive)",
+          foreground: "var(--color-destructive-foreground)",
         },
         muted: {
-          DEFAULT: "#F1F5F9",
-          foreground: "#64748B",
-          border: "#CBD5E1",
+          DEFAULT: "var(--color-muted)",
+          foreground: "var(--color-muted-foreground)",
+          border: "var(--color-border-muted)",
         },
         accent: {
-          DEFAULT: "#F8FAFC",
-          foreground: "#475569",
+          DEFAULT: "var(--color-accent)",
+          foreground: "var(--color-accent-foreground)",
         },
         card: {
-          DEFAULT: "#FFFFFF",
-          foreground: "#0F172A",
+          DEFAULT: "var(--color-card)",
+          foreground: "var(--color-card-foreground)",
         },
-        border: "#E2E8F0",
-        input: "#E2E8F0",
-        ring: "#4169E1",
+        popover: {
+          DEFAULT: "var(--color-popover)",
+          foreground: "var(--color-popover-foreground)",
+        },
+        success: {
+          DEFAULT: "var(--color-success)",
+          foreground: "var(--color-success-foreground)",
+        },
+        warning: {
+          DEFAULT: "var(--color-warning)",
+          foreground: "var(--color-warning-foreground)",
+        },
+        info: {
+          DEFAULT: "var(--color-info)",
+          foreground: "var(--color-info-foreground)",
+        },
+        border: "var(--color-border)",
+        input: "var(--color-input)",
+        ring: "var(--color-ring)",
+        background: "var(--color-background)",
+        foreground: "var(--color-foreground)",
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
       },
       borderRadius: {
-        lg: "0.75rem",
-        md: "0.5rem",
-        sm: "0.25rem",
+        lg: "var(--radius-lg)",
+        md: "var(--radius-md)",
+        sm: "var(--radius-sm)",
+      },
+      boxShadow: {
+        "neu-outer": "var(--shadow-outer)",
+        "neu-inner": "var(--shadow-inner)",
+        "neu-outer-sm": "var(--shadow-outer-sm)",
+        "neu-inner-sm": "var(--shadow-inner-sm)",
       },
     },
   },

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
@@ -25,6 +25,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { screeningAPI } from "@/api";
+import { useTriageStore } from "@/store";
 
 // Helper function to determine BP badge variant
 const getBPBadgeVariant = (status) => {
@@ -59,7 +60,7 @@ export function DoctorTriagePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get("search") || "";
-  const [currentPage, setCurrentPage] = useState(1);
+  const { currentPage, setCurrentPage } = useTriageStore();
 
   // Fetch screenings with pagination
   const {
@@ -167,11 +168,11 @@ export function DoctorTriagePage() {
     <div className="space-y-6">
       {/* Header - no search button, using header search */}
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
+        <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
           <Stethoscope className="h-8 w-8 text-blue-600" />
           Patient Triage
         </h1>
-        <p className="text-slate-600 mt-1">
+        <p className="text-muted-foreground mt-1">
           {searchQuery
             ? `Found ${paginationInfo.count} patient(s) matching "${searchQuery}"`
             : "Find and manage today's patients for consultation"}
@@ -180,25 +181,25 @@ export function DoctorTriagePage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className={stats.critical > 0 ? "border-red-500 bg-red-50" : ""}>
+        <Card className={stats.critical > 0 ? "border-destructive bg-destructive/10" : ""}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-muted-foreground">
                   {searchQuery ? "Found" : "Today's Patients"}
                 </p>
                 <p className="text-2xl font-bold">{stats.total}</p>
               </div>
-              <User className="h-8 w-8 text-slate-400" />
+              <User className="h-8 w-8 text-muted-foreground" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className={stats.critical > 0 ? "border-red-500 bg-red-50" : ""}>
+        <Card className={stats.critical > 0 ? "border-destructive bg-destructive/10" : ""}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600">Critical Cases</p>
+                <p className="text-sm text-muted-foreground">Critical Cases</p>
                 <p className="text-2xl font-bold text-red-600">
                   {stats.critical}
                 </p>
@@ -212,7 +213,7 @@ export function DoctorTriagePage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600">Pending</p>
+                <p className="text-sm text-muted-foreground">Pending</p>
                 <p className="text-2xl font-bold text-orange-600">
                   {stats.pending}
                 </p>
@@ -226,7 +227,7 @@ export function DoctorTriagePage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600">Completed</p>
+                <p className="text-sm text-muted-foreground">Completed</p>
                 <p className="text-2xl font-bold text-green-600">
                   {stats.completed}
                 </p>
@@ -256,7 +257,7 @@ export function DoctorTriagePage() {
               <p>Error loading patients. Please try again.</p>
             </div>
           ) : displayPatients.length === 0 ? (
-            <div className="text-center py-8 text-slate-500">
+            <div className="text-center py-8 text-muted-foreground">
               <User className="h-12 w-12 mx-auto mb-2 opacity-50" />
               <p>
                 {searchQuery
@@ -292,7 +293,7 @@ export function DoctorTriagePage() {
                   <TableRow
                     key={patient.id}
                     className={
-                      isInCrisis(patient) ? "bg-red-50 hover:bg-red-100" : ""
+                      isInCrisis(patient) ? "bg-destructive/10 hover:bg-destructive/20" : ""
                     }
                   >
                     <TableCell className="font-medium">
@@ -305,7 +306,7 @@ export function DoctorTriagePage() {
                             {patient.full_name}
                           </div>
                           {patient.phone_number && (
-                            <div className="text-xs text-slate-500 flex items-center gap-1">
+                            <div className="text-xs text-muted-foreground flex items-center gap-1">
                               <Phone className="h-3 w-3" />
                               {patient.phone_number}
                             </div>
@@ -352,7 +353,7 @@ export function DoctorTriagePage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <span className="text-sm text-slate-500">
+                      <span className="text-sm text-muted-foreground">
                         {formatDate(patient.created_at)}
                       </span>
                     </TableCell>
@@ -400,7 +401,7 @@ export function DoctorTriagePage() {
             <ChevronLeft className="h-4 w-4" />
             Previous
           </Button>
-          <span className="text-sm text-slate-600">
+          <span className="text-sm text-muted-foreground">
             Page {currentPage} of {paginationInfo.totalPages}
           </span>
           <Button

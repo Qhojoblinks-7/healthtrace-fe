@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { screeningAPI } from "@/api";
+import { useConsultationStore } from "@/store";
 
 // Helper to calculate health score (0-100)
 const calculateHealthScore = (screening) => {
@@ -115,11 +116,10 @@ export function ClinicalConsultationPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { doctorAdvice, setDoctorAdvice, requiresSpecialist, setRequiresSpecialist } = useConsultationStore();
 
   // Get patient from navigation state or fetch
   const initialPatient = location.state?.patient;
-  const [doctorAdvice, setDoctorAdvice] = useState("");
-  const [requiresSpecialist, setRequiresSpecialist] = useState(false);
 
   // Fetch patient data
   const { data: patientData, isLoading } = useQuery({
@@ -163,7 +163,7 @@ export function ClinicalConsultationPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-white to-[#E8EDF2] dark:from-background dark:to-card flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     );
@@ -171,7 +171,7 @@ export function ClinicalConsultationPage() {
 
   if (!patient) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-white to-[#E8EDF2] dark:from-background dark:to-card flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-2" />
           <p className="text-lg font-medium">Patient not found</p>
@@ -185,9 +185,9 @@ export function ClinicalConsultationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-white to-[#E8EDF2] dark:from-background dark:to-card">
       {/* Header */}
-      <div className="bg-white border-b px-6 py-4">
+      <div className="bg-background border-b px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
@@ -198,7 +198,7 @@ export function ClinicalConsultationPage() {
                 <Stethoscope className="h-5 w-5 text-blue-600" />
                 Clinical Consultation
               </h1>
-              <p className="text-sm text-slate-500">Patient ID: {patient.id}</p>
+              <p className="text-sm text-muted-foreground">Patient ID: {patient.id}</p>
             </div>
           </div>
           <Button
@@ -232,24 +232,24 @@ export function ClinicalConsultationPage() {
               <CardContent>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-slate-500">Full Name</Label>
+                    <Label className="text-muted-foreground">Full Name</Label>
                     <p className="font-semibold text-lg">{patient.full_name}</p>
                   </div>
                   <div>
-                    <Label className="text-slate-500">Age / Gender</Label>
+                    <Label className="text-muted-foreground">Age / Gender</Label>
                     <p className="font-semibold">
                       {patient.age} years / {patient.gender}
                     </p>
                   </div>
                   <div>
-                    <Label className="text-slate-500">Phone</Label>
+                    <Label className="text-muted-foreground">Phone</Label>
                     <p className="font-medium flex items-center gap-1">
                       <Phone className="h-3 w-3" />
                       {patient.phone_number || "N/A"}
                     </p>
                   </div>
                   <div>
-                    <Label className="text-slate-500">Screened By</Label>
+                    <Label className="text-muted-foreground">Screened By</Label>
                     <p className="font-medium">
                       {patient.screened_by || "Unknown"}
                     </p>
@@ -274,7 +274,7 @@ export function ClinicalConsultationPage() {
                     >
                       {healthScore.score}
                     </div>
-                    <div className="text-sm text-slate-500 mt-1">
+                    <div className="text-sm text-muted-foreground mt-1">
                       out of 100
                     </div>
                     <Badge
@@ -293,7 +293,7 @@ export function ClinicalConsultationPage() {
                 </div>
                 {healthScore.issues.length > 0 && (
                   <div className="mt-4 pt-4 border-t">
-                    <Label className="text-slate-500 mb-2 block">
+                    <Label className="text-muted-foreground mb-2 block">
                       Health Concerns:
                     </Label>
                     <div className="flex flex-wrap gap-2">
@@ -301,7 +301,7 @@ export function ClinicalConsultationPage() {
                         <Badge
                           key={idx}
                           variant="outline"
-                          className="text-orange-600 border-orange-300 bg-orange-50"
+                          className="text-warning border-warning/300 bg-warning/10"
                         >
                           <AlertTriangle className="h-3 w-3 mr-1" />
                           {issue}
@@ -324,8 +324,8 @@ export function ClinicalConsultationPage() {
               <CardContent>
                 <div className="grid grid-cols-2 gap-4">
                   {/* Blood Pressure */}
-                  <div className="p-4 rounded-lg bg-slate-50">
-                    <Label className="text-slate-500 flex items-center gap-1">
+                  <div className="p-4 rounded-lg bg-muted">
+                    <Label className="text-muted-foreground flex items-center gap-1">
                       <Heart className="h-3 w-3" />
                       Blood Pressure
                     </Label>
@@ -361,8 +361,8 @@ export function ClinicalConsultationPage() {
                   </div>
 
                   {/* Glucose */}
-                  <div className="p-4 rounded-lg bg-slate-50">
-                    <Label className="text-slate-500 flex items-center gap-1">
+                  <div className="p-4 rounded-lg bg-muted">
+                    <Label className="text-muted-foreground flex items-center gap-1">
                       <TrendingUp className="h-3 w-3" />
                       Glucose Level
                     </Label>
@@ -394,8 +394,8 @@ export function ClinicalConsultationPage() {
                   </div>
 
                   {/* BMI */}
-                  <div className="p-4 rounded-lg bg-slate-50">
-                    <Label className="text-slate-500">BMI</Label>
+                  <div className="p-4 rounded-lg bg-muted">
+                    <Label className="text-muted-foreground">BMI</Label>
                     <p
                       className={`text-2xl font-bold mt-1 ${
                         patient.bmi_category?.includes("Obese")
@@ -415,8 +415,8 @@ export function ClinicalConsultationPage() {
                   </div>
 
                   {/* Heart Rate */}
-                  <div className="p-4 rounded-lg bg-slate-50">
-                    <Label className="text-slate-500">Heart Rate</Label>
+                  <div className="p-4 rounded-lg bg-muted">
+                    <Label className="text-muted-foreground">Heart Rate</Label>
                     <p className="text-2xl font-bold mt-1">
                       {patient.heart_rate ? `${patient.heart_rate} BPM` : "N/A"}
                     </p>
@@ -434,13 +434,13 @@ export function ClinicalConsultationPage() {
                 <CardContent className="space-y-3">
                   {patient.known_conditions && (
                     <div>
-                      <Label className="text-slate-500">Known Conditions</Label>
+                      <Label className="text-muted-foreground">Known Conditions</Label>
                       <p className="text-sm">{patient.known_conditions}</p>
                     </div>
                   )}
                   {patient.current_medications && (
                     <div>
-                      <Label className="text-slate-500">
+                      <Label className="text-muted-foreground">
                         Current Medications
                       </Label>
                       <p className="text-sm">{patient.current_medications}</p>
@@ -468,7 +468,7 @@ export function ClinicalConsultationPage() {
                   onChange={(e) => setDoctorAdvice(e.target.value)}
                   className="min-h-[300px] resize-none"
                 />
-                <div className="mt-2 text-xs text-slate-500">
+                <div className="mt-2 text-xs text-muted-foreground">
                   {doctorAdvice.length} characters
                 </div>
               </CardContent>
@@ -483,12 +483,12 @@ export function ClinicalConsultationPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50">
+                <div className="flex items-center justify-between p-4 rounded-lg bg-muted">
                   <div>
                     <Label className="text-base font-medium">
                       Requires Specialist Follow-up
                     </Label>
-                    <p className="text-sm text-slate-500">
+                    <p className="text-sm text-muted-foreground">
                       Mark this if the patient needs to see a specialist
                     </p>
                   </div>
@@ -498,7 +498,7 @@ export function ClinicalConsultationPage() {
                   />
                 </div>
                 {requiresSpecialist && (
-                  <div className="mt-4 p-3 rounded-lg bg-orange-50 border border-orange-200">
+                  <div className="mt-4 p-3 rounded-lg bg-orange-50 border border-orange-200 dark:bg-orange-900/20 dark:border-orange-700/30">
                     <Badge
                       variant="outline"
                       className="text-orange-700 border-orange-300"
@@ -526,12 +526,12 @@ export function ClinicalConsultationPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <div className="text-sm text-slate-500">
+                    <div className="text-sm text-muted-foreground">
                       Consulted on:{" "}
                       {new Date(patient.consultation_date).toLocaleString()}
                     </div>
                     {patient.doctor_info?.name && (
-                      <div className="text-sm text-slate-500">
+                      <div className="text-sm text-muted-foreground">
                         By: {patient.doctor_info.name}
                       </div>
                     )}
@@ -546,7 +546,7 @@ export function ClinicalConsultationPage() {
             )}
 
             {/* Summary Info */}
-            <Card className="bg-blue-50 border-blue-200">
+            <Card className="bg-info/10 border-info/200">
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
                   <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />

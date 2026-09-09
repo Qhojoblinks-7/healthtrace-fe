@@ -1,10 +1,10 @@
-import { useState } from 'react'
 import { MapPin, User, Settings, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useSessionStore } from '@/store'
+import { useUIStore } from '@/store'
 
 // Common screening locations in Ghana
 const GHANA_LOCATIONS = [
@@ -28,10 +28,14 @@ const GHANA_LOCATIONS = [
  */
 export function IntakeHeader() {
   const { volunteerName, location, setLocation, setVolunteerName } = useSessionStore()
-  const [isEditing, setIsEditing] = useState(false)
-  const [showLocationDropdown, setShowLocationDropdown] = useState(false)
-  const [tempLocation, setTempLocation] = useState(location)
-  const [tempName, setTempName] = useState(volunteerName)
+  const isEditing = useUIStore((state) => state.isEditingIntake)
+  const setIsEditing = useUIStore((state) => state.setIsEditingIntake)
+  const showLocationDropdown = useUIStore((state) => state.showLocationDropdown)
+  const setShowLocationDropdown = useUIStore((state) => state.setShowLocationDropdown)
+  const tempLocation = useUIStore((state) => state.tempLocation)
+  const setTempLocation = useUIStore((state) => state.setTempLocation)
+  const tempName = useUIStore((state) => state.tempName)
+  const setTempName = useUIStore((state) => state.setTempName)
 
   const handleSave = () => {
     setLocation(tempLocation)
@@ -79,7 +83,7 @@ export function IntakeHeader() {
                 onFocus={() => setShowLocationDropdown(true)}
               />
               {showLocationDropdown && (
-                <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-48 overflow-auto">
+                <div className="absolute z-10 w-full mt-1 bg-background border rounded-md shadow-lg max-h-48 overflow-auto">
                   {GHANA_LOCATIONS.filter(loc => 
                     loc.toLowerCase().includes(tempLocation.toLowerCase())
                   ).map((loc) => (
